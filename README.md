@@ -6,5 +6,8 @@ As described in Minning Massive Datasets http://infolab.stanford.edu/~ullman/mmd
 Install Jaccardupy using `pip install jaccardupy`<br>
 Install mmh3 library needed for Minhash using `pip install mmh3`
 
+### Authors
+Justin Boylan-Toomey
+
 ### License
 MIT License
