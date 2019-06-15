@@ -1,11 +1,22 @@
 from setuptools import setup
 
-setup(name='jaccardupy',
-      version='0.1',
-      description='Near Duplicate Text Detection Library.',
-      url='https://github.com/justinnbt/Jaccardupy',
-      license='MIT',
-      author='Justin Boylan-Toomey',
-      author_email='justin.boylan-toomey@outlook.com',
-      packages=['jaccardupy'],
-      install_requires=['Cython', 'numpy'])
+readme = open("README.md", "r")
+long_description = readme.read()
+readme.close()
+
+setup(
+    name='jaccardupy',
+    version='0.1',
+    author='Justin Boylan-Toomey',
+    author_email='justin.boylan-toomey@outlook.com',
+    description='Near Duplicate Text Detection Library.',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
+    url='https://github.com/justinnbt/Jaccardupy',
+    packages=['jaccardupy'],
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+    ],
+)
