@@ -1,0 +1,9 @@
+README.md
+setup.py
+jaccardupy/__init__.py
+jaccardupy/lsh.py
+jaccardupy/minhash.py
+jaccardupy.egg-info/PKG-INFO
+jaccardupy.egg-info/SOURCES.txt
+jaccardupy.egg-info/dependency_links.txt
+jaccardupy.egg-info/top_level.txt

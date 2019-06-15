@@ -1,0 +1,19 @@
+Metadata-Version: 2.1
+Name: jaccardupy
+Version: 0.1
+Summary: Near Duplicate Text Detection Library.
+Home-page: https://github.com/justinnbt/Jaccardupy
+Author: Justin Boylan-Toomey
+Author-email: justin.boylan-toomey@outlook.com
+License: UNKNOWN
+Description: # Jaccardupy
+        Python library for detecting near duplicate texts in a corpus using Locality Sensitive Hashing.
+        
+        ### License
+        MIT License
+        
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Description-Content-Type: text/markdown
