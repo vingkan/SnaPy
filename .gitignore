@@ -1,0 +1,8 @@
+.idea/
+.ipynb_checkpoints
+*.pyc
+*__pycache__/
+.idea/vcs.xml
+working/
+.cache/
+.build/
