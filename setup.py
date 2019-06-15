@@ -6,7 +6,7 @@ readme.close()
 
 setup(
     name='jaccardupy',
-    version='0.1',
+    version='0.2',
     author='Justin Boylan-Toomey',
     author_email='justin.boylan-toomey@outlook.com',
     description='Jaccardupy is a Python library for detecting near duplicate texts'
