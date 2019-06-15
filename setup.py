@@ -14,9 +14,10 @@ setup(
     long_description_content_type='text/markdown',
     url='https://github.com/justinnbt/Jaccardupy',
     packages=['jaccardupy'],
+    install_requires=['numpy'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
-    ],
+    ]
 )
