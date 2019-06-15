@@ -3,7 +3,7 @@ Python library for detecting near duplicate texts in a corpus using Locality Sen
 As described in Minning Massive Datasets http://infolab.stanford.edu/~ullman/mmds/ch3.pdf.
 
 ### Installation
-Install Jaccardupy using `pip install jaccardupy`<br>
+Install SnaPy using `pip install snapy`<br>
 Install mmh3 library needed for Minhash using `pip install mmh3`
 
 ### Authors
