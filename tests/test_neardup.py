@@ -3,7 +3,7 @@ import sys
 import pickle
 import os
 sys.path.append("..")
-from neardup import MinHash, LSH
+from jaccardupy import MinHash, LSH
 
 content = [
     "It is carrying instruments to analyse the unexplored region's geology",
