@@ -184,7 +184,7 @@ class LSH:
         """
         return self._i_bucket.keys()
 
-    def _adjacency_list(self, sensitivity=1, jaccard=None, keep_jaccard=False, average_jaccard=False):
+    def adjacency_list(self, sensitivity=1, jaccard=None, keep_jaccard=False, average_jaccard=False):
         """
         Returns list of ids contained in the model.
 
