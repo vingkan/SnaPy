@@ -5,16 +5,16 @@ long_description = readme.read()
 readme.close()
 
 setup(
-    name='jaccardupy',
-    version='0.2',
+    name='SnaPy',
+    version='0.1',
     author='Justin Boylan-Toomey',
     author_email='justin.boylan-toomey@outlook.com',
-    description='Jaccardupy is a Python library for detecting near duplicate texts'
+    description='SnaPy is a Python library for detecting near duplicate texts'
                 ' in a corpus using Locality Sensitive Hashing.',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url='https://github.com/justinnbt/Jaccardupy',
-    packages=['jaccardupy'],
+    url='https://github.com/justinnbt/SnaPy',
+    packages=['snapy'],
     install_requires=['numpy'],
     classifiers=[
         "Programming Language :: Python :: 3",
