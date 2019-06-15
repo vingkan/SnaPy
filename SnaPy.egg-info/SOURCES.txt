@@ -1,0 +1,10 @@
+README.md
+setup.py
+SnaPy.egg-info/PKG-INFO
+SnaPy.egg-info/SOURCES.txt
+SnaPy.egg-info/dependency_links.txt
+SnaPy.egg-info/requires.txt
+SnaPy.egg-info/top_level.txt
+snapy/__init__.py
+snapy/lsh.py
+snapy/minhash.py
