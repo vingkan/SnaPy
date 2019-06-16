@@ -39,6 +39,8 @@ print(lsh.query(1, sensitivity=8))
 >>> [8, 4]
 
 ```
+### Contributing
+Contributions are very welcome, message us or just submit a pull request!
 
 ### Authors
 Justin Boylan-Toomey
