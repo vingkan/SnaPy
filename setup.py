@@ -5,7 +5,7 @@ long_description = readme.read()
 readme.close()
 
 setup(
-    name='SnaPy',
+    name='snapy',
     version='0.1.2',
     author='Justin Boylan-Toomey',
     author_email='justin.boylan-toomey@outlook.com',
