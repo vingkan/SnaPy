@@ -17,7 +17,7 @@ class MinHash:
             permutations (int): Number of hash values in each document signature.
             hash_bits (int): Hash value size, must be 32, 64 or 128 bit.
             method (str): Method to be used for minhash function, must be universal
-            or k_smallest_values.
+                or k_smallest_values.
             seed (int): Seeds from which to generate random hash function.
         """
         self.char_n_gram = char_n_gram
