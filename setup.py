@@ -10,7 +10,7 @@ setup(
     author='Justin Boylan-Toomey',
     author_email='justin.boylan-toomey@outlook.com',
     description='SnaPy is a Python library for detecting near duplicate texts'
-                ' in a corpus using Locality Sensitive Hashing.',
+                ' in a corpus using Minhash and Locality Sensitive Hashing.',
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/justinnbt/SnaPy',

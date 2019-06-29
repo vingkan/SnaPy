@@ -1,4 +1,5 @@
 # SnaPy
+[![Build Status](https://travis-ci.com/justinnbt/SnaPy.svg?branch=master)](https://travis-ci.com/justinnbt/SnaPy)<br>
 Python library for detecting near duplicate texts in a corpus at scale using Locality Sensitive Hashing.<br>
 As described in Mining Massive Datasets http://infolab.stanford.edu/~ullman/mmds/ch3.pdf.
 

@@ -1,8 +1,6 @@
 import pytest
-import sys
 import pickle
 import os
-sys.path.append("..")
 from snapy import MinHash, LSH
 
 content = [
