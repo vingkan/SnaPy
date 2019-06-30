@@ -88,7 +88,7 @@ Should MinHash signatures be retained for later estimation of Jaccard similarity
 ```.update(minhash, new_labels)```<br>
 Updates model with new MinHash signature matrix and labels.<br><br>
 ```.query(label, sensitivity=1, min_jaccard=None)```<br>
-Takes a unique identifier and returns if of near duplicate texts from model.<br><br>
+Takes a label and returns the labels of any near duplicate/similar texts.<br><br>
 ```.def remove(label):```<br>
 Remove file label and minhash signature from model.<br><br>
 ```.contains()```<br>
