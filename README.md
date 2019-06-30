@@ -1,5 +1,6 @@
 # SnaPy
 [![Build Status](https://travis-ci.com/justinnbt/SnaPy.svg?branch=master)](https://travis-ci.com/justinnbt/SnaPy)
+[![PyPI version](https://badge.fury.io/py/snapy.svg)](https://badge.fury.io/py/snapy)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 <br>
 Python library for detecting near duplicate texts in a corpus at scale using Locality Sensitive Hashing.<br>
