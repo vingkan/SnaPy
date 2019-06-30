@@ -1,5 +1,6 @@
 # SnaPy
 [![Build Status](https://travis-ci.com/justinnbt/SnaPy.svg?branch=master)](https://travis-ci.com/justinnbt/SnaPy)
+[![PyPI version](https://badge.fury.io/py/snapy.svg)](https://badge.fury.io/py/snapy)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 <br>
 Python library for detecting near duplicate texts in a corpus at scale using Locality Sensitive Hashing.<br>
@@ -9,7 +10,7 @@ As described in Mining Massive Datasets http://infolab.stanford.edu/~ullman/mmds
 Install SnaPy using: `pip install snapy`<br>
 Install mmh3 library needed for Minhash using: `pip install mmh3`
 
-### Usage Example
+### Quickstart Example
 ``` python
 from snapy import MinHash, LSH
 
@@ -42,6 +43,9 @@ print(lsh.query(1, sensitivity=8))
 >>> [8, 4]
 
 ```
+### MinHash
+Generates MinHash object that contains 
+
 ### Contributing
 Contributions are very welcome, message us or just submit a pull request!
 
