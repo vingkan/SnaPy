@@ -47,17 +47,17 @@ print(lsh.query(1, sensitivity=8))
 Generates MinHash object that contains matrix of Minhash Signatures for each text.
 ### Parameters
 <b>text: {list or ndarray}</b><br>
-&nbsp;&nbsp;&nbsp;&nbsp;Iterable containing text strings.<br><br>
+Iterable containing text strings.<br><br>
 <b>char_n_gram: int, optional, default: 9</b><br>
-&nbsp;&nbsp;&nbsp;&nbsp;Number of characters to be used in each shingle.<br><br>
+Number of characters to be used in each shingle.<br><br>
 <b>permutations: int, optional, default: 100</b><br>
-&nbsp;&nbsp;&nbsp;&nbsp;Number of hash values in each document signature.<br><br>
+Number of hash values in each document signature.<br><br>
 <b>vhash_bits: int, optional, default: 64</b><br>
-&nbsp;&nbsp;&nbsp;&nbsp;Hash value size, must be 32, 64 or 128 bit.<br><br>
+Hash value size, must be 32, 64 or 128 bit.<br><br>
 <b>method: str, optional, default: 'universal'</b><br>
-&nbsp;&nbsp;&nbsp;&nbsp;Method to be used for minhash function, must be universal or k_smallest_values.<br><br>
+Method to be used for minhash function, must be universal or k_smallest_values.<br><br>
 <b>seed: int, optional, default: None</b><br>
-&nbsp;&nbsp;&nbsp;&nbsp;Seeds from which to generate random hash function.<br><br>
+Seeds from which to generate random hash function.<br><br>
 
 ## Contributing
 Contributions are very welcome, message us or just submit a pull request!
