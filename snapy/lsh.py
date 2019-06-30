@@ -126,7 +126,7 @@ class LSH:
                 for label, signature in zip(new_labels, minhash.signatures):
                     self.signatures[label] = signature
         else:
-            # Create parameters for new model.
+            # Create parameters for new model.]
             if self.use_jaccard:
                 self.signatures = {l: s for l, s in zip(new_labels, minhash.signatures)}
             self.permutations = minhash.permutations
@@ -186,7 +186,7 @@ class LSH:
 
     def adjacency_list(self, sensitivity=1, jaccard=None, keep_jaccard=False, average_jaccard=False):
         """
-        Returns list of ids contained in the model.
+        Returns adjacency list.
 
         Args:
             sensitivity (int): Number of identical buckets two ids must occur
@@ -198,7 +198,7 @@ class LSH:
             average_jaccard (bool): Return average Jaccard value.
 
         Returns:
-            List: Text ids in model.
+            List: adjacency list.
         """
         adjacency_list = {}
         for label in self._i_bucket:

@@ -7,6 +7,8 @@ python:
 install:
   - pip install -r requirements.txt
   - pip install -e .
+  - pip install codecov
+  - pip install pytest-cov
 
 script:
-  - pytest
+  - pytest --cov-report term --cov=snapy tests/
