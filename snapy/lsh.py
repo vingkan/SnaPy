@@ -214,21 +214,18 @@ class LSH:
             if jaccard:
                 duplicates = []
                 for candidate in candidates:
-                    a = label
-                    b = candidate
-                    score = self._jaccard_similarity(a, b)
+                    score = self._jaccard_similarity(label, candidate)
                     if score >= jaccard:
-                        result = b
+                        result = candidate
                         if keep_jaccard:
-                            result = (score, b)
+                            result = (score, candidate)
                         elif average_jaccard:
                             result = score
                         duplicates.append(result)
-                if duplicates:
-                    if not average_jaccard:
-                        adjacency_list[label] = duplicates
-                    else:
-                        adjacency_list[label] = sum(duplicates) / len(duplicates)
+                if not average_jaccard:
+                    adjacency_list[label] = duplicates
+                elif duplicates:
+                    adjacency_list[label] = sum(duplicates) / len(duplicates)
             else:
                 adjacency_list[label] = candidates
         return adjacency_list
