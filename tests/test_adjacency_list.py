@@ -24,11 +24,31 @@ def test_lsh_adjacency_list():
 
     adj_list = lsh.adjacency_list(sensitivity=10)
     assert type(adj_list) is dict
-    assert adj_list == {1: [8, 4], 2: [], 3: [5], 4: [1, 8], 5: [3], 6: [], 7: [], 8: [1, 4], 9: []}
+    assert adj_list == {
+        1: [8, 4],
+        2: [],
+        3: [5],
+        4: [1, 8],
+        5: [3],
+        6: [],
+        7: [],
+        8: [1, 4],
+        9: []
+    }
 
     adj_list = lsh.adjacency_list(jaccard=0.5)
     assert type(adj_list) is dict
-    assert adj_list == {1: [8, 4], 2: [], 3: [5], 4: [1], 5: [3], 6: [], 7: [], 8: [1], 9: []}
+    assert adj_list == {
+        1: [8, 4],
+        2: [],
+        3: [5],
+        4: [1],
+        5: [3],
+        6: [],
+        7: [],
+        8: [1],
+        9: []
+    }
 
     adj_list = lsh.adjacency_list(jaccard=0.5, keep_jaccard=True)
     assert type(adj_list) is dict
@@ -47,9 +67,13 @@ def test_lsh_adjacency_list():
     adj_list = lsh.adjacency_list(jaccard=0.5, keep_jaccard=False, average_jaccard=True)
     assert type(adj_list) is dict
     assert adj_list == {
-        1: 0.56981039152918,
-        3: 0.639344262295082,
-        4: 0.6129032258064516,
-        5: 0.639344262295082,
-        8: 0.5267175572519084
+        1: (2, 0.56981039152918),
+        2: (0, 0),
+        3: (1, 0.639344262295082),
+        4: (1, 0.6129032258064516),
+        5: (1, 0.639344262295082),
+        6: (0, 0),
+        7: (0, 0),
+        8: (1, 0.5267175572519084),
+        9: (0, 0)
     }

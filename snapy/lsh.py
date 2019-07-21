@@ -224,8 +224,11 @@ class LSH:
                         duplicates.append(result)
                 if not average_jaccard:
                     adjacency_list[label] = duplicates
-                elif duplicates:
-                    adjacency_list[label] = sum(duplicates) / len(duplicates)
+                else:
+                    if duplicates:
+                        adjacency_list[label] = (len(duplicates), sum(duplicates) / len(duplicates))
+                    else:
+                        adjacency_list[label] = (0, 0)
             else:
                 adjacency_list[label] = candidates
         return adjacency_list
