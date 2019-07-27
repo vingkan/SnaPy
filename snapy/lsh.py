@@ -9,8 +9,7 @@ from copy import copy
 
 class LSH:
     def __init__(self, minhash=None, labels=None, no_of_bands=None, use_jaccard=False):
-        """
-        Initialize the LSH object.
+        """ Initialize the LSH object.
 
         Args:
             minhash (np.array): Object returned by MinHash class.
@@ -38,8 +37,7 @@ class LSH:
             raise ValueError('MinHash must be provided if labels used.')
 
     def _lsh(self, signatures, labels):
-        """
-        Break signatures into bands and hash components to buckets.
+        """ Break signatures into bands and hash components to buckets.
 
         Args:
             signatures (np.array): MinHash signature Matrix.
@@ -55,8 +53,8 @@ class LSH:
                 self._i_bucket[label].append(bucket_id)
 
     def _jaccard_similarity(self, set_a, set_b):
-        """
-        Estimate the Jaccard similarity between two document signatures.
+        """ Estimate the Jaccard similarity between two document signatures.
+
         Calculated by the cardinality of intersection over cardinality of union.
 
         Args:
@@ -71,8 +69,7 @@ class LSH:
         return len(set_a & set_b) / len(set_a | set_b)
 
     def _candidate_duplicates(self, bucket_ids, label, sensitivity, jaccard):
-        """
-        Identify candidate duplicates and check Jaccard Similarity.
+        """ Identify candidate duplicates and check Jaccard Similarity.
 
         Args:
             bucket_ids (list): List of bucket ids.
@@ -109,8 +106,7 @@ class LSH:
             return candidates
 
     def update(self, minhash, new_labels):
-        """
-        Update model with new MinHash matrix and labels.
+        """ Update model with new MinHash matrix and labels.
 
         Args:
             minhash (minhash): MinHash object containing new minhash signatures.
@@ -134,8 +130,7 @@ class LSH:
         self._lsh(minhash.signatures, new_labels)
 
     def query(self, label, sensitivity=1, min_jaccard=None):
-        """
-        Take unique identifier and return near duplicates from model.
+        """ Take unique identifier and return near duplicates from model.
 
         Args:
             label (str, int, float): Label of document for which to return
@@ -158,8 +153,7 @@ class LSH:
         return self._candidate_duplicates(buckets, label, sensitivity, min_jaccard)
 
     def remove(self, label):
-        """
-        Remove file label and minhash from model.
+        """ Remove file label and minhash from model.
 
         Args:
             label (str, int, float): Label for text to be removed from model.
@@ -176,8 +170,7 @@ class LSH:
             del self.signatures[label]
 
     def contains(self):
-        """
-        Returns list of ids contained in the model.
+        """ Returns list of ids contained in the model.
 
         Returns:
              List: Text ids in model.
