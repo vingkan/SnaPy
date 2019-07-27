@@ -185,8 +185,7 @@ class LSH:
         return self._i_bucket.keys()
 
     def adjacency_list(self, sensitivity=1, jaccard=None, keep_jaccard=False, average_jaccard=False):
-        """
-        Returns adjacency list.
+        """ Returns adjacency list.
 
         Args:
             sensitivity (int): Number of identical buckets two ids must occur

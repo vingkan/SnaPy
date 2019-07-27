@@ -7,9 +7,8 @@ import heapq
 
 
 class MinHash:
-    def __init__(self, text, char_n_gram=9, permutations=100, hash_bits=64, method='universal', seed=None):
-        """
-        Generates minhash signature matrix for texts in a corpus.
+    def __init__(self, text, char_n_gram=9, permutations=100, hash_bits=64, method='multi_hash', seed=None):
+        """Generates a minhash signature matrix for texts in a corpus.
 
         Args:
             text (list, np.array): Iterable containing text content of each document.
@@ -25,12 +24,12 @@ class MinHash:
         if hash_bits not in [32, 64, 128]:
             raise ValueError('Only 32, 64 and 128 bit hashes are supported.')
         self.hash_bits = hash_bits
-        if method not in ['universal', 'k_smallest_values']:
+        if method not in ['universal', 'multi_hash', 'k_smallest_values', 'smallest_values']:
             raise ValueError('Only universal and k smallest value hash methods are supported.')
         self.method = method
         if seed:
             np.random.seed(seed)
-        if method is 'universal':
+        if method in ['universal', 'multi_hash']:
             self.hash_seeds = np.random.randint(low=1, high=100_000_000, size=permutations)
         else:
             self.hash_seeds = np.random.randint(low=1, high=100_000_000)
@@ -39,8 +38,7 @@ class MinHash:
         self.signatures = self._min_hash()
 
     def _k_shingles(self, texts):
-        """
-        Break string into k-shingles consisting of k characters and return generator object.
+        """Break string into k-shingles consisting of k characters and return generator object.
 
         Args:
             texts (list, array): list of texts contents.
@@ -58,8 +56,7 @@ class MinHash:
             yield shingles
 
     def _universal_hash(self, document):
-        """
-        Generates a texts minhash signature using universal method.
+        """Generates a texts minhash signature using universal method.
 
         Args:
             document (list): List of document shingles.
@@ -97,8 +94,7 @@ class MinHash:
         return signature
 
     def _k_smallest_hash(self, document):
-        """
-        Generates a texts minhash signature using k smallest neighbours method.
+        """Generates a texts minhash signature using k smallest neighbours method.
 
         Args:
             document (list): List of document shingles.
@@ -124,8 +120,7 @@ class MinHash:
             return heapq.nsmallest(self.permutations, signature)
 
     def _min_hash(self):
-        """
-        Calculates document signature by calling the selected hashing method.
+        """Calculates document signature by calling the selected hashing method.
 
         Returns:
              np.array: Minhash signature matrix.
