@@ -1,6 +1,6 @@
 from setuptools import setup
 
-readme = open("README.md", "r")
+readme = open('README.md', 'r')
 long_description = readme.read()
 readme.close()
 
@@ -17,8 +17,8 @@ setup(
     packages=['snapy'],
     install_requires=['numpy'],
     classifiers=[
-        "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",
-        "Operating System :: OS Independent",
+        'Programming Language :: Python :: 3',
+        'License :: OSI Approved :: MIT License',
+        'Operating System :: OS Independent',
     ]
 )
