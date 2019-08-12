@@ -15,7 +15,7 @@ class MinHash:
             char_n_gram (int): Number of characters to be used in each shingle.
             permutations (int): Number of hash values in each document signature.
             hash_bits (int): Hash value size, must be 32, 64 or 128 bit.
-            method (str): Method to be used for minhash function, must be universal
+            method (str): Method to be used for minhash function, must be multi_hash
                 or k_smallest_values.
             seed (int): Seeds from which to generate random hash function.
         """
@@ -24,8 +24,8 @@ class MinHash:
         if hash_bits not in [32, 64, 128]:
             raise ValueError('Only 32, 64 and 128 bit hashes are supported.')
         self.hash_bits = hash_bits
-        if method not in ['universal', 'multi_hash', 'k_smallest_values', 'smallest_values']:
-            raise ValueError('Only universal and k smallest value hash methods are supported.')
+        if method not in ['universal', 'multi_hash', 'k_smallest_values']:
+            raise ValueError('Only multi_hash and k smallest value hash methods are supported.')
         self.method = method
         if seed:
             np.random.seed(seed)
