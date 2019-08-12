@@ -218,7 +218,10 @@ class LSH:
                     adjacency_list[label] = duplicates
                 else:
                     if duplicates:
-                        adjacency_list[label] = (len(duplicates), sum(duplicates) / len(duplicates))
+                        adjacency_list[label] = (
+                            len(duplicates),
+                            sum(duplicates) / len(duplicates)
+                        )
                     else:
                         adjacency_list[label] = (0, 0)
             else:
