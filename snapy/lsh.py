@@ -1,7 +1,6 @@
 # Class for generating a similarity model from Minhash signature matrices using LSH.
 # Author: Justin Boylan-Toomey
 
-from collections import Counter
 from collections import defaultdict
 import numpy as np
 from copy import copy
@@ -52,22 +51,6 @@ class LSH:
                 self._buckets[bucket_id].append(label)
                 self._i_bucket[label].append(bucket_id)
 
-    def _jaccard_similarity(self, set_a, set_b):
-        """ Estimate the Jaccard similarity between two document signatures.
-
-        Calculated by the cardinality of intersection over cardinality of union.
-
-        Args:
-            set_a (str, int, float): Text label.
-            set_b (str, int, float): Text label.
-
-        Returns:
-            Float: Jaccard Similarity between 0 and 1.
-        """
-        set_a = set(self.signatures[set_a])
-        set_b = set(self.signatures[set_b])
-        return len(set_a & set_b) / len(set_a | set_b)
-
     def _candidate_duplicates(self, bucket_ids, label, sensitivity, jaccard):
         """ Identify candidate duplicates and check Jaccard Similarity.
 
@@ -82,32 +65,27 @@ class LSH:
         Returns:
             List: Near duplicate document ids.
         """
-        candidates = []
+        candidates = defaultdict(int)
         # Retrieve candidate duplicate pairs from model.
         for bucket_id in bucket_ids:
             matches = copy(self._buckets.get(bucket_id))
             matches.remove(label)
-            candidates += matches
+            for match in matches:
+                candidates[match] += 1
         # Apply sensitivity threshold.
         if sensitivity > 1:
-            candidates = [
-                value
-                for value, count in Counter(candidates).items()
-                if count >= sensitivity
-            ]
-        else:
-            candidates = list(set(candidates))
+            for key in list(candidates):
+                if candidates[key] < sensitivity:
+                    del candidates[key]
         # Apply Jaccard threshold and unzip pairs.
         if jaccard:
-            duplicates = []
-            for candidate in candidates:
-                a = label
-                b = candidate
-                if self._jaccard_similarity(a, b) >= jaccard:
-                    duplicates.append(b)
-            return duplicates
-        else:
-            return candidates
+            for key in list(candidates):
+                if (
+                    candidates[key] / self.no_of_bands
+                ) < jaccard:
+                    del candidates[key]
+        candidates = candidates.keys()
+        return candidates
 
     def update(self, minhash, new_labels):
         """ Update model with new MinHash matrix and labels.
@@ -154,10 +132,12 @@ class LSH:
             )
         buckets = self._i_bucket.get(label)
         if not buckets:
-            raise ValueError(
+            raise KeyError(
                 'Label {} does not exist in model'.format(label)
             )
-        return self._candidate_duplicates(buckets, label, sensitivity, min_jaccard)
+        return self._candidate_duplicates(
+            buckets, label, sensitivity, min_jaccard
+        )
 
     def remove(self, label):
         """ Remove file label and minhash from model.
@@ -184,27 +164,27 @@ class LSH:
         """
         return self._i_bucket.keys()
 
+
+"""
     def adjacency_list(
             self,
             sensitivity=1,
             jaccard=None,
-            keep_jaccard=False,
-            average_jaccard=False
+            keep_weighting=False
     ):
-        """ Returns adjacency list.
+        "#"" Returns adjacency list.
 
         Args:
             sensitivity (int): Number of identical buckets two ids must occur
                 in to be considered a near duplicate pair.
             jaccard (float): Minimum Jaccard Similarity for documents to be
                 counted as near duplicates.
-            keep_jaccard (bool): If True return near duplicate tuple as Jaccard score,
+            keep_weighting (bool): If True return near duplicate tuple as Jaccard score,
                 near duplicate tuple.
-            average_jaccard (bool): Return average Jaccard value.
 
         Returns:
             List: adjacency list.
-        """
+        "#""
         adjacency_list = {}
         for label in self._i_bucket:
             check_buckets = self._i_bucket[label]
@@ -226,22 +206,12 @@ class LSH:
                     score = self._jaccard_similarity(label, candidate)
                     if score >= jaccard:
                         result = candidate
-                        if keep_jaccard:
+                        if keep_weighting:
                             result = (score, candidate)
-                        elif average_jaccard:
-                            result = score
                         duplicates.append(result)
-                if not average_jaccard:
-                    adjacency_list[label] = duplicates
-                else:
-                    if duplicates:
-                        adjacency_list[label] = (
-                            len(duplicates),
-                            sum(duplicates)
-                            / len(duplicates)
-                        )
-                    else:
-                        adjacency_list[label] = (0, 0)
+
+                adjacency_list[label] = duplicates
             else:
                 adjacency_list[label] = candidates
         return adjacency_list
+"""
