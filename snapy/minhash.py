@@ -77,10 +77,16 @@ class MinHash:
             texts = [texts]
         for text in texts:
             if self.n_gram_type == 'char':
-                shingles = [text[char:char + self.n_gram] for char in range(len(text))][:trim_overflow]
+                shingles = [
+                               text[char:char + self.n_gram]
+                               for char in range(len(text))
+                           ][:trim_overflow]
             else:
                 terms = text.split()
-                shingles = [' '.join(terms[term:term + self.n_gram]) for term in range(len(terms))][:trim_overflow]
+                shingles = [
+                               ' '.join(terms[term:term + self.n_gram])
+                               for term in range(len(terms))
+                           ][:trim_overflow]
             if not shingles:
                 raise ValueError(
                     'Shingle "n_gram" size must not exceed minimum text length.'
