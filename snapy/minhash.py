@@ -83,7 +83,7 @@ class MinHash:
                 shingles = [' '.join(terms[term:term + self.n_gram]) for term in range(len(terms))][:trim_overflow]
             if not shingles:
                 raise ValueError(
-                    'If using k_smallest_values shingle size must not exceed minimum text length.'
+                    'Shingle "n_gram" size must not exceed minimum text length.'
                 )
             yield shingles
 
