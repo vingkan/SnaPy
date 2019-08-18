@@ -207,7 +207,7 @@ class LSH:
                 near duplicate tuple.
 
         Returns:
-            List: adjacency list.
+            List: 2 tuple relationships/edges between texts, optionally a weighted 3 tuple.
         """
         if sensitivity > self.no_of_bands:
             raise ValueError(
