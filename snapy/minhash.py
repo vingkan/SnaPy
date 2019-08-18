@@ -1,5 +1,5 @@
 # Class for generating a minhash matrix from a text corpus.
-# Author: Justin Boylan-Toomey
+# Authors: Justin Boylan-Toomey
 
 import numpy as np
 import mmh3
@@ -7,6 +7,20 @@ import heapq
 
 
 class MinHash:
+    """ MinHash.
+
+    Attributes:
+        n_gram (int): Number of characters used in each shingle.
+        n_gram_type (str): Type of n gram used for shingles.
+        permutations (int): Number of random permutations used to generate signatures.
+        hash_bits (int): Hash value size used to generate signatures.
+        method (str): Method used to generate signatures.
+        seed (int): Seed used to generate signatures.
+        signatures (np.array): Matrix of minhash signatures, m represents each texts
+            minhash signature with n representing each permutations minimum hash value.
+
+    """
+
     def __init__(
             self,
             text,
@@ -28,6 +42,7 @@ class MinHash:
             method (str): Method to be used for minhash function, must be multi_hash
                 or k_smallest_values.
             seed (int): Seeds from which to generate random hash function.
+
         """
         self.n_gram = n_gram
         if n_gram_type not in ['char', 'term']:
@@ -71,6 +86,7 @@ class MinHash:
 
         Yields:
             List: Shingles for each input text.
+
         """
         trim_overflow = (self.n_gram - 1) * -1
         if type(texts) == str:
@@ -101,6 +117,7 @@ class MinHash:
 
         Returns:
             list: Minhash signature.
+
         """
         signature = []
         for seed in np.nditer(self.hash_seeds):
@@ -133,6 +150,7 @@ class MinHash:
 
         Returns:
             list: Minhash signature.
+
         """
         signature = []
         heapq.heapify(signature)
@@ -160,7 +178,9 @@ class MinHash:
         """ Calculates document signature by calling the selected hashing method.
 
         Returns:
-             np.array: Minhash signature matrix.
+             np.array: Matrix of minhash signatures, m represents each texts minhash
+                signature with n representing each permutations minimum hash value.
+
         """
         signatures = []
         for document in self._shingles:

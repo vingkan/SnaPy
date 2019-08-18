@@ -1,5 +1,5 @@
 # Class for generating a similarity model from Minhash signature matrices using LSH.
-# Author: Justin Boylan-Toomey
+# Authors: Justin Boylan-Toomey
 
 from collections import defaultdict
 import numpy as np
@@ -7,16 +7,24 @@ from copy import copy
 
 
 class LSH:
+    """ Locality Sensitive Hashing.
+
+    Attributes:
+        no_of_bands (int): Number of bands used in model.
+        permutations (int): Number of permutations used in MinHash.
+
+    """
+
     def __init__(self, minhash=None, labels=None, no_of_bands=None):
         """ Initialize the LSH object.
 
         Args:
             minhash (np.array): Object returned by MinHash class.
-            labels (list, np.array, pandas series): Iterable containing labels.
+            labels (list, np.array): Iterable, array or pandas series containing labels.
             no_of_bands (int): Number of bands to break minhash signature into.
+
         """
         # Create default variables
-        self.signatures = None
         self.no_of_bands = no_of_bands
         self._buckets = defaultdict(list)
         self._i_bucket = defaultdict(list)
@@ -39,6 +47,7 @@ class LSH:
         Args:
             signatures (np.array): MinHash signature Matrix.
             labels (list): List of labels for MinHash signatures.
+
         """
         if not self.no_of_bands:
             self.no_of_bands = self.permutations
@@ -64,6 +73,7 @@ class LSH:
 
         Returns:
             List: Near duplicate document ids.
+
         """
         candidates = defaultdict(int)
         # Retrieve candidate duplicate pairs from model.
@@ -92,6 +102,7 @@ class LSH:
         Args:
             minhash (minhash): MinHash object containing new minhash signatures.
             new_labels (list): List of new labels for update texts.
+
         """
         if self._i_bucket:
             # Check parameters if model already exists.
@@ -126,6 +137,7 @@ class LSH:
 
         Returns:
             List: Candidate duplicates for provided text label.
+
         """
         if sensitivity > self.no_of_bands:
             raise ValueError(
@@ -145,6 +157,7 @@ class LSH:
 
         Args:
             label (str, int, float): Label for text to be removed from model.
+
         """
         buckets = self._i_bucket.get(label)
         if not buckets:
@@ -162,6 +175,7 @@ class LSH:
 
         Returns:
              List: Text ids in model.
+
         """
         return self._i_bucket.keys()
 
@@ -176,6 +190,7 @@ class LSH:
 
         Returns:
             List: adjacency list.
+
         """
         if sensitivity > self.no_of_bands:
             raise ValueError(
@@ -208,6 +223,7 @@ class LSH:
 
         Returns:
             List: 2 tuple relationships/edges between texts, optionally a weighted 3 tuple.
+
         """
         if sensitivity > self.no_of_bands:
             raise ValueError(
