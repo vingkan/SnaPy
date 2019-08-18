@@ -171,13 +171,13 @@ class LSH:
         del self._i_bucket[label]
 
     def contains(self):
-        """ Returns list of ids contained in the model.
+        """ Returns a list of all labels contained in the model.
 
         Returns:
-             List: Text ids in model.
+             List: All labels for texts contained in the model.
 
         """
-        return self._i_bucket.keys()
+        return list(self._i_bucket)
 
     def adjacency_list(self, sensitivity=1, jaccard=None):
         """ Returns adjacency list.
