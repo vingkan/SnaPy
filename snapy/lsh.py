@@ -213,16 +213,18 @@ class LSH:
     ):
         """ Returns relationship pairs between related texts as tuples.
 
+        
+
         Args:
-            sensitivity (int): Number of identical buckets two ids must occur
-                in to be considered a near duplicate pair.
-            jaccard (float): Minimum Jaccard Similarity for documents to be
-                counted as near duplicates.
-            jaccard_weighted (bool): If True return near duplicate tuple as Jaccard score,
-                near duplicate tuple.
+            sensitivity (int): Number of unique buckets two ids must co-occur in to be
+                considered a near duplicate pair.
+            jaccard (float): Minimum Jaccard Similarity for texts to be returned as near
+                duplicates.
+            jaccard_weighted (bool): If True return a list of 3 tuples including the
+                relationship pairs and their associated Jaccard similarity.
 
         Returns:
-            List: 2 tuple relationships/edges between texts, optionally a weighted 3 tuple.
+            List: 2 tuple relationship pairs between texts, optionally a weighted 3 tuple.
 
         """
         if sensitivity > self.no_of_bands:
