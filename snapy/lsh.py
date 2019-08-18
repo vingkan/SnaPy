@@ -130,10 +130,10 @@ class LSH:
         Args:
             label (str, int, float): Label of document for which to return
             near duplicates.
-            sensitivity (int): Number of identical buckets two ids must occur
-                in to be considered a near duplicate pair.
-            min_jaccard (float): Minimum Jaccard Similarity for documents to be
-                counted as near duplicates.
+            sensitivity (int): Number of unique buckets two ids must co-occur in to be
+                considered a near duplicate pair.
+            min_jaccard (float): Minimum Jaccard Similarity for texts to be returned as
+                near duplicates.
 
         Returns:
             List: Candidate duplicates for provided text label.
@@ -153,7 +153,7 @@ class LSH:
         )
 
     def remove(self, label):
-        """ Remove file label and minhash from model.
+        """ Remove label and associated text signature from model.
 
         Args:
             label (str, int, float): Label for text to be removed from model.
@@ -182,11 +182,16 @@ class LSH:
     def adjacency_list(self, sensitivity=1, jaccard=None):
         """ Returns adjacency list.
 
+        Iterates over texts, pairing each text with a list of labels whose relationships with
+        each text are above a certain threshold.
+
+        Can be used to create an undirected graph for texts in the LSH object.
+
         Args:
-            sensitivity (int): Number of identical buckets two ids must occur
-                in to be considered a near duplicate pair.
-            jaccard (float): Minimum Jaccard Similarity for documents to be
-                counted as near duplicates.
+            sensitivity (int): Number of unique buckets two ids must co-occur in to be
+                considered a near duplicate pair.
+            jaccard (float): Minimum Jaccard Similarity for texts to be returned as near
+                duplicates.
 
         Returns:
             Dict: Adjacency list.
@@ -222,10 +227,9 @@ class LSH:
         May be slow and scale poorly for larger corpora.
 
         Args:
-            sensitivity (int): Number of unique buckets two ids must co-occur in to be
-                considered a near duplicate pair.
-            jaccard (float): Minimum Jaccard Similarity for texts to be returned as near
-                duplicates.
+            sensitivity (int): Number of unique buckets two ids must co-occur for relationship
+            to be returned.
+            jaccard (float): Minimum Jaccard Similarity for relationship to be returned.
             jaccard_weighted (bool): If True return a list of 3 tuples including the
                 relationship pairs and their associated Jaccard similarity.
 
