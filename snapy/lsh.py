@@ -211,9 +211,13 @@ class LSH:
             jaccard=0,
             jaccard_weighted=False
     ):
-        """ Returns relationship pairs between related texts as tuples.
+        """ Returns list of relationship pairs between related texts.
 
-        
+        Iterates over texts to create relationship pairs from hash bucket contents, where
+        relationships are above a certain threshold.
+
+        Edge list can be used to create an undirected graph, optionally with edges weighted
+        by Jaccard similarity.
 
         Args:
             sensitivity (int): Number of unique buckets two ids must co-occur in to be
