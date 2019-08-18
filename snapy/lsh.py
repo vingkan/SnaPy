@@ -41,7 +41,7 @@ class LSH:
             labels (list): List of labels for MinHash signatures.
         """
         if not self.no_of_bands:
-            self.no_of_bands = self.permutations // 2
+            self.no_of_bands = self.permutations
         for label, signature in zip(labels, signatures):
             bands = np.hsplit(
                 np.array(signature), self.no_of_bands
@@ -80,11 +80,10 @@ class LSH:
         # Apply Jaccard threshold and unzip pairs.
         if jaccard:
             for key in list(candidates):
-                if (
-                    candidates[key] / self.no_of_bands
-                ) < jaccard:
+                jaccard_ratio = candidates[key] / self.no_of_bands
+                if jaccard_ratio < jaccard:
                     del candidates[key]
-        candidates = candidates.keys()
+        candidates = list(candidates)
         return candidates
 
     def update(self, minhash, new_labels):
@@ -98,7 +97,9 @@ class LSH:
             # Check parameters if model already exists.
             if set(
                     self._i_bucket.keys()
-            ).intersection(set(new_labels)) != set():
+            ).intersection(
+                set(new_labels)
+            ) != set():
                 raise ValueError(
                     'At least one provided label already exists in model.'
                 )
@@ -148,7 +149,7 @@ class LSH:
         buckets = self._i_bucket.get(label)
         if not buckets:
             raise ValueError(
-                'Label {} does not exist in model'.format(label)
+                'Label {} does not exist in model.'.format(label)
             )
         for bucket in buckets:
             self._buckets[bucket].remove(label)
@@ -164,54 +165,83 @@ class LSH:
         """
         return self._i_bucket.keys()
 
-
-"""
-    def adjacency_list(
-            self,
-            sensitivity=1,
-            jaccard=None,
-            keep_weighting=False
-    ):
-        "#"" Returns adjacency list.
+    def adjacency_list(self, sensitivity=1, jaccard=None):
+        """ Returns adjacency list.
 
         Args:
             sensitivity (int): Number of identical buckets two ids must occur
                 in to be considered a near duplicate pair.
             jaccard (float): Minimum Jaccard Similarity for documents to be
                 counted as near duplicates.
-            keep_weighting (bool): If True return near duplicate tuple as Jaccard score,
+
+        Returns:
+            List: adjacency list.
+        """
+        if sensitivity > self.no_of_bands:
+            raise ValueError(
+                'Sensitivity must be <= no of bands.'
+            )
+        adjacency_list = {}
+        for label in self._i_bucket.keys():
+            buckets = self._i_bucket.get(label)
+            candidates = self._candidate_duplicates(
+                buckets, label, sensitivity, jaccard
+            )
+            adjacency_list[label] = candidates
+        return adjacency_list
+
+    def edge_list(
+            self,
+            sensitivity=1,
+            jaccard=0,
+            jaccard_weighted=False
+    ):
+        """ Returns relationship pairs between related texts as tuples.
+
+        Args:
+            sensitivity (int): Number of identical buckets two ids must occur
+                in to be considered a near duplicate pair.
+            jaccard (float): Minimum Jaccard Similarity for documents to be
+                counted as near duplicates.
+            jaccard_weighted (bool): If True return near duplicate tuple as Jaccard score,
                 near duplicate tuple.
 
         Returns:
             List: adjacency list.
-        "#""
-        adjacency_list = {}
-        for label in self._i_bucket:
-            check_buckets = self._i_bucket[label]
-            candidates = []
-            for bucket in check_buckets:
-                candidates += copy(self._buckets[bucket])
-                candidates.remove(label)
+        """
+        if sensitivity > self.no_of_bands:
+            raise ValueError(
+                'Sensitivity must be <= no of bands.'
+            )
+        edges = []
+        labels = list(self._i_bucket)
+        for i in range(len(labels)):
+            candidates = defaultdict(int)
+            label = labels.pop()
+            for bucket in self._i_bucket.get(label):
+                matches = copy(self._buckets.get(bucket))
+                matches.remove(label)
+                for match in matches:
+                    candidates[match] += 1
             if sensitivity > 1:
-                candidates = [
-                    value
-                    for value, count in Counter(candidates).items()
-                    if count >= sensitivity
-                ]
-            else:
-                candidates = list(set(candidates))
-            if jaccard:
-                duplicates = []
-                for candidate in candidates:
-                    score = self._jaccard_similarity(label, candidate)
-                    if score >= jaccard:
-                        result = candidate
-                        if keep_weighting:
-                            result = (score, candidate)
-                        duplicates.append(result)
-
-                adjacency_list[label] = duplicates
-            else:
-                adjacency_list[label] = candidates
-        return adjacency_list
-"""
+                for key in list(candidates):
+                    if candidates[key] < sensitivity:
+                        del candidates[key]
+            for candidate in list(candidates):
+                if candidate in labels:
+                    if jaccard or jaccard_weighted:
+                        jaccard_ratio = candidates[candidate] / self.no_of_bands
+                        if jaccard_ratio >= jaccard:
+                            if jaccard_weighted:
+                                edges.append(
+                                    (label, candidate, jaccard_ratio)
+                                )
+                            else:
+                                edges.append(
+                                    (label, candidate)
+                                )
+                    else:
+                        edges.append(
+                            (label, candidate)
+                        )
+        return edges
