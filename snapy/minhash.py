@@ -79,13 +79,16 @@ class MinHash:
         self.signatures = self._min_hash()
 
     def _k_shingles(self, texts):
-        """ Break string into k-shingles consisting of k characters and return generator object.
+        """ Generates shingles for each input text.
+
+        Breaks strings into k overlapping shingles consisting of characters or terms
+        of n_gram size.
 
         Args:
-            texts (list, array): list of texts contents.
+            texts (list, np.array): list, array or Pandas series of input texts.
 
         Yields:
-            List: Shingles for each input text.
+            List: Shingle list generated for each input text.
 
         """
         trim_overflow = (self.n_gram - 1) * -1
@@ -110,13 +113,18 @@ class MinHash:
             yield shingles
 
     def _multi_hash(self, document):
-        """ Generates a texts minhash signature using multi hash method.
+        """ Generates a texts minhash signature using multi-hash method.
+
+        Uses i random hashes for j permutations selecting the minimum hash value
+        each time to build each texts hash signature.
+
+        Slower but more stable than k smallest hash method.
 
         Args:
             document (list): List of document shingles.
 
         Returns:
-            list: Minhash signature.
+            list: List of text signatures generated using k smallest neighbours method.
 
         """
         signature = []
@@ -145,14 +153,20 @@ class MinHash:
     def _k_smallest_hash(self, document):
         """ Generates a texts minhash signature using k smallest neighbours method.
 
+        Uses a single random hash to simulate a shuffle of each texts shingles.
+        Then selecting i smallest minimum hash values for j permutations.
+
+        Faster but less stable than multi hash method.
+
         Args:
-            document (list): List of document shingles.
+            document (list): List of text shingles.
 
         Returns:
-            list: Minhash signature.
+            list: List of text signatures generated using k smallest neighbours method.
 
         """
         signature = []
+        # Uses a heap to make calculating n smallest values more efficient.
         heapq.heapify(signature)
         if len(document) <= self.permutations:
             raise ValueError(
