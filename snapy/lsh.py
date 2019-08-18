@@ -97,11 +97,12 @@ class LSH:
         return candidates
 
     def update(self, minhash, new_labels):
-        """ Update model with new MinHash matrix and labels.
+        """ Updates LSH object with new MinHash matrix and labels.
 
         Args:
-            minhash (minhash): MinHash object containing new minhash signatures.
-            new_labels (list): List of new labels for update texts.
+            minhash (minhash): MinHash object containing new minhash signatures to
+                add to LSH object.
+            new_labels (list): List of new labels to add to LSH object.
 
         """
         if self._i_bucket:
@@ -125,11 +126,15 @@ class LSH:
         self._lsh(minhash.signatures, new_labels)
 
     def query(self, label, sensitivity=1, min_jaccard=None):
-        """ Take unique identifier and return near duplicates from model.
+        """ Returns near duplicates from model.
+
+        Takes a provided text label and returns a list of labels for texts whose
+        similarity with the provided text is above a provided threshold.
+
+        Can be used to create a recommendation model.
 
         Args:
-            label (str, int, float): Label of document for which to return
-            near duplicates.
+            label (str, int, float): Label of text for which to return near duplicates.
             sensitivity (int): Number of unique buckets two ids must co-occur in to be
                 considered a near duplicate pair.
             min_jaccard (float): Minimum Jaccard Similarity for texts to be returned as
