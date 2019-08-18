@@ -189,7 +189,7 @@ class LSH:
                 counted as near duplicates.
 
         Returns:
-            List: adjacency list.
+            Dict: Adjacency list.
 
         """
         if sensitivity > self.no_of_bands:
@@ -218,6 +218,8 @@ class LSH:
 
         Edge list can be used to create an undirected graph, optionally with edges weighted
         by Jaccard similarity.
+
+        May be slow and scale poorly for larger corpora.
 
         Args:
             sensitivity (int): Number of unique buckets two ids must co-occur in to be
