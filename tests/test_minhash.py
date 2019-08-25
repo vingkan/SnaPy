@@ -30,7 +30,7 @@ def test_minhash_defaults():
     assert minhash.hash_seeds.shape[0] == 100
 
 
-def multi_hash_tests(first_hash, second_hash, hash_size, hash_type):
+def multi_hash_tests(first_hash, second_hash, hash_size):
     minhash = MinHash(
         content, hash_bits=hash_size, seed=seed
     )
@@ -40,7 +40,6 @@ def multi_hash_tests(first_hash, second_hash, hash_size, hash_type):
     assert minhash.signatures.shape == (9, 100)
     signature = minhash.signatures
     assert signature[0][0] == first_hash
-    assert np.array(signature[0][0]).dtype == hash_type
     assert signature[-1][-1] == second_hash
 
 
@@ -48,8 +47,7 @@ def test_multi_minhash_64():
     multi_hash_tests(
         -9050934246571064385,
         -9214867028879031438,
-        64,
-        'int64'
+        64
     )
 
 
@@ -57,8 +55,7 @@ def test_multi_minhash_32():
     multi_hash_tests(
         -2146652248,
         -2083408229,
-        32,
-        'int32'
+        32
     )
 
 
@@ -66,12 +63,11 @@ def test_multi_minhash_128():
     multi_hash_tests(
         6975552809044285838442055830789296621,
         1468352371533149607987200777331494350,
-        128,
-        object
+        128
     )
 
 
-def k_smallest_hash_tests(first_hash, second_hash, hash_size, hash_type):
+def k_smallest_hash_tests(first_hash, second_hash, hash_size):
     minhash = MinHash(
         content,
         permutations=53,
@@ -85,7 +81,6 @@ def k_smallest_hash_tests(first_hash, second_hash, hash_size, hash_type):
     assert minhash.signatures.shape == (9, 53)
     signature = minhash.signatures
     assert signature[0][0] == first_hash
-    assert np.array(signature[0][0]).dtype == hash_type
     assert signature[-1][-1] == second_hash
     with pytest.raises(ValueError):
         MinHash(
@@ -101,8 +96,7 @@ def test_k_minhash_64():
     k_smallest_hash_tests(
         -9050934246571064385,
         5299643506028682639,
-        64,
-        'int64'
+        64
     )
 
 
@@ -110,8 +104,7 @@ def test_k_minhash_32():
     k_smallest_hash_tests(
         -2146652248,
         1112636791,
-        32,
-        'int32'
+        32
     )
 
 
@@ -119,8 +112,7 @@ def test_k_minhash_128():
     k_smallest_hash_tests(
         6975552809044285838442055830789296621,
         257973159872861001802369490457024221505,
-        128,
-        object
+        128
     )
 
 
