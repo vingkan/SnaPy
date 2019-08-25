@@ -28,6 +28,7 @@ class LSH:
         self.no_of_bands = no_of_bands
         self._buckets = defaultdict(list)
         self._i_bucket = defaultdict(list)
+        self.permutations = None
         # Run methods if minhash and labels provided
         if minhash and labels:
             self.permutations = minhash.permutations
@@ -50,7 +51,7 @@ class LSH:
 
         """
         if not self.no_of_bands:
-            self.no_of_bands = self.permutations
+            self.no_of_bands = self.permutations // 2
         for label, signature in zip(labels, signatures):
             bands = np.hsplit(
                 np.array(signature), self.no_of_bands
@@ -106,7 +107,7 @@ class LSH:
 
         """
         if self._i_bucket:
-            # Check parameters if model already exists.
+            # Check if texts already exist in model.
             if set(
                     self._i_bucket.keys()
             ).intersection(
@@ -117,7 +118,9 @@ class LSH:
                 )
             if self.permutations != minhash.permutations:
                 raise ValueError(
-                    'Number of permutations must be {} to match LSH model.'.format(self.permutations)
+                    'Number of permutations in minhash must be {} to match LSH model.'.format(
+                        self.permutations
+                    )
                 )
         else:
             # Create parameters for new model.
