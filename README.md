@@ -35,14 +35,27 @@ labels = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 seed = 3
 
 # Create MinHash object.
-minhash = MinHash(content, char_n_gram=9, permutations=100, hash_bits=64, method='universal', seed=3)
+minhash = MinHash(content, n_gram=9, permutations=100, hash_bits=64, method='multi_hash', seed=3)
 
 # Create LSH model.
 lsh = LSH(minhash, labels, no_of_bands=50)
 
 # Query to find near duplicates for text 1.
-print(lsh.query(1, sensitivity=8))
+print(lsh.query(1, min_jaccard=0.5))
 >>> [8, 4]
+
+# Generate minhash signature and add new texts to LSH model.
+new_text = [
+    'Jupiter is primarily composed of hydrogen with a quarter of its mass being helium',
+    'Jupiter moving out of the inner Solar System would have allowed the formation of inner planets.',
+]
+new_labels = ['doc1', 'doc2']
+
+minhash = MinHash(new_text, n_gram=9, permutations=100, hash_bits=64, method='multi_hash', seed=3)
+lsh.update(new_text, new_labels)
+
+# Check contents of documents.
+print(lsh.contains())
 
 ```
 ## MinHash
