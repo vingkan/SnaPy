@@ -1,78 +1,68 @@
 # Class for generating a similarity model from Minhash signature matrices using LSH.
-# Author: Justin Boylan-Toomey
+# Authors: Justin Boylan-Toomey
 
-from collections import Counter
 from collections import defaultdict
 import numpy as np
 from copy import copy
 
 
 class LSH:
-    def __init__(self, minhash=None, labels=None, no_of_bands=None, use_jaccard=False):
-        """
-        Initialize the LSH object.
+    """ Locality Sensitive Hashing.
+
+    Attributes:
+        no_of_bands (int): Number of bands used in model.
+        permutations (int): Number of permutations used in MinHash.
+
+    """
+
+    def __init__(self, minhash=None, labels=None, no_of_bands=None):
+        """ Initialize the LSH object.
 
         Args:
             minhash (np.array): Object returned by MinHash class.
-            labels (list, np.array, pandas series): Iterable containing labels.
+            labels (list, np.array): Iterable, array or pandas series containing labels.
             no_of_bands (int): Number of bands to break minhash signature into.
-            use_jaccard (bool): Should MinHash signatures be retained for later
-                estimation of Jaccard similarity.
+
         """
         # Create default variables
-        self.signatures = None
         self.no_of_bands = no_of_bands
-        self.use_jaccard = use_jaccard
         self._buckets = defaultdict(list)
         self._i_bucket = defaultdict(list)
+        self.permutations = None
         # Run methods if minhash and labels provided
         if minhash and labels:
-            if use_jaccard:
-                # Store signatures for later estimation of Jaccard Similarity
-                self.signatures = {l: s for l, s in zip(labels, minhash.signatures)}
             self.permutations = minhash.permutations
             self._lsh(minhash.signatures, labels)
         elif minhash:
-            raise ValueError('Labels must be provided if MinHash used.')
+            raise ValueError(
+                'labels cannot be None if LSH initialised with minhash object.'
+            )
         elif labels:
-            raise ValueError('MinHash must be provided if labels used.')
+            raise ValueError(
+                'minhash object cannot be None if LSH initialised with labels.'
+            )
 
     def _lsh(self, signatures, labels):
-        """
-        Break signatures into bands and hash components to buckets.
+        """ Break signatures into bands and hash components to buckets.
 
         Args:
             signatures (np.array): MinHash signature Matrix.
             labels (list): List of labels for MinHash signatures.
+
         """
         if not self.no_of_bands:
-            self.no_of_bands = self.permutations / 2
+            self.no_of_bands = self.permutations // 2
         for label, signature in zip(labels, signatures):
-            bands = np.hsplit(np.array(signature), self.no_of_bands)
+            bands = np.hsplit(
+                np.array(signature), self.no_of_bands
+            )
             for band in bands:
                 bucket_id = hash(tuple(band))
                 self._buckets[bucket_id].append(label)
                 self._i_bucket[label].append(bucket_id)
 
-    def _jaccard_similarity(self, set_a, set_b):
-        """
-        Estimate the Jaccard similarity between two document signatures.
-        Calculated by the cardinality of intersection over cardinality of union.
-
-        Args:
-            set_a (str, int, float): Text label.
-            set_b (str, int, float): Text label.
-
-        Returns:
-            Float: Jaccard Similarity between 0 and 1.
-        """
-        set_a = set(self.signatures[set_a])
-        set_b = set(self.signatures[set_b])
-        return len(set_a & set_b) / len(set_a | set_b)
-
     def _candidate_duplicates(self, bucket_ids, label, sensitivity, jaccard):
-        """
-        Identify candidate duplicates and check Jaccard Similarity.
+        """ Identify candidate duplicates and check Jaccard Similarity.
 
         Args:
             bucket_ids (list): List of bucket ids.
@@ -84,151 +74,210 @@ class LSH:
 
         Returns:
             List: Near duplicate document ids.
+
         """
-        candidates = []
+        candidates = defaultdict(int)
         # Retrieve candidate duplicate pairs from model.
         for bucket_id in bucket_ids:
             matches = copy(self._buckets.get(bucket_id))
             matches.remove(label)
-            candidates += matches
+            for match in matches:
+                candidates[match] += 1
         # Apply sensitivity threshold.
         if sensitivity > 1:
-            candidates = [value for value, count in Counter(candidates).items() if count >= sensitivity]
-        else:
-            candidates = list(set(candidates))
+            for key in list(candidates):
+                if candidates[key] < sensitivity:
+                    del candidates[key]
         # Apply Jaccard threshold and unzip pairs.
         if jaccard:
-            duplicates = []
-            for candidate in candidates:
-                a = label
-                b = candidate
-                if self._jaccard_similarity(a, b) >= jaccard:
-                    duplicates.append(b)
-            return duplicates
-        else:
-            return candidates
+            for key in list(candidates):
+                jaccard_ratio = candidates[key] / self.no_of_bands
+                if jaccard_ratio < jaccard:
+                    del candidates[key]
+        candidates = list(candidates)
+        return candidates
 
     def update(self, minhash, new_labels):
-        """
-        Update model with new MinHash matrix and labels.
+        """ Updates LSH object with new MinHash matrix and labels.
 
         Args:
-            minhash (minhash): MinHash object containing new minhash signatures.
-            new_labels (list): List of new labels for update texts.
+            minhash (minhash): MinHash object containing new minhash signatures to
+                add to LSH object.
+            new_labels (list): List of new labels to add to LSH object.
+
         """
         if self._i_bucket:
-            # Check parameters if model already exists.
-            if set(self._i_bucket.keys()).intersection(set(new_labels)) != set():
-                raise ValueError('At least one provided label already exists in model.')
+            # Check if texts already exist in model.
+            if set(
+                    self._i_bucket.keys()
+            ).intersection(
+                set(new_labels)
+            ) != set():
+                raise ValueError(
+                    'At least one provided label already exists in model.'
+                )
             if self.permutations != minhash.permutations:
-                raise ValueError('Number of permutations must be {} to match LSH model.'.format(self.permutations))
-            if self.use_jaccard:
-                for label, signature in zip(new_labels, minhash.signatures):
-                    self.signatures[label] = signature
+                raise ValueError(
+                    'Number of permutations in minhash must be {} to match LSH model.'.format(
+                        self.permutations
+                    )
+                )
         else:
-            # Create parameters for new model.]
-            if self.use_jaccard:
-                self.signatures = {l: s for l, s in zip(new_labels, minhash.signatures)}
+            # Create parameters for new model.
             self.permutations = minhash.permutations
         # Update model.
         self._lsh(minhash.signatures, new_labels)
 
     def query(self, label, sensitivity=1, min_jaccard=None):
-        """
-        Take unique identifier and return near duplicates from model.
+        """ Returns near duplicates from model.
+
+        Takes a provided text label and returns a list of labels for texts whose
+        similarity with the provided text is above a provided threshold.
+
+        Can be used to create a recommendation model.
 
         Args:
-            label (str, int, float): Label of document for which to return
-            near duplicates.
-            sensitivity (int): Number of identical buckets two ids must occur
-                in to be considered a near duplicate pair.
-            min_jaccard (float): Minimum Jaccard Similarity for documents to be
-                counted as near duplicates.
+            label (str, int, float): Label of text for which to return near duplicates.
+            sensitivity (int): Number of unique buckets two ids must co-occur in to be
+                considered a near duplicate pair.
+            min_jaccard (float): Minimum Jaccard Similarity for texts to be returned as
+                near duplicates.
 
         Returns:
             List: Candidate duplicates for provided text label.
+
         """
-        if min_jaccard and not self.use_jaccard:
-            raise ValueError('To use min_jaccard model needs to be initialized with use_jaccard = True.')
         if sensitivity > self.no_of_bands:
-            raise ValueError('Sensitivity must be <= no of bands.')
+            raise ValueError(
+                'Sensitivity must be <= no of bands.'
+            )
         buckets = self._i_bucket.get(label)
         if not buckets:
-            raise ValueError('Label {} does not exist in model'.format(label))
-        return self._candidate_duplicates(buckets, label, sensitivity, min_jaccard)
+            raise KeyError(
+                'Label {} does not exist in model'.format(label)
+            )
+        return self._candidate_duplicates(
+            buckets, label, sensitivity, min_jaccard
+        )
 
     def remove(self, label):
-        """
-        Remove file label and minhash from model.
+        """ Remove label and associated text signature from model.
 
         Args:
             label (str, int, float): Label for text to be removed from model.
+
         """
         buckets = self._i_bucket.get(label)
         if not buckets:
-            raise ValueError('Label {} does not exist in model'.format(label))
+            raise ValueError(
+                'Label {} does not exist in model.'.format(label)
+            )
         for bucket in buckets:
             self._buckets[bucket].remove(label)
             if not self._buckets[bucket]:
                 del self._buckets[bucket]
         del self._i_bucket[label]
-        if self.use_jaccard:
-            del self.signatures[label]
 
     def contains(self):
-        """
-        Returns list of ids contained in the model.
+        """ Returns a list of all labels contained in the model.
 
         Returns:
-             List: Text ids in model.
-        """
-        return self._i_bucket.keys()
+             List: All labels for texts contained in the model.
 
-    def adjacency_list(self, sensitivity=1, jaccard=None, keep_jaccard=False, average_jaccard=False):
         """
-        Returns adjacency list.
+        return list(self._i_bucket)
+
+    def adjacency_list(self, sensitivity=1, jaccard=None):
+        """ Returns adjacency list.
+
+        Iterates over texts, pairing each text with a list of labels whose relationships with
+        each text are above a certain threshold.
+
+        Can be used to create an undirected graph for texts in the LSH object.
 
         Args:
-            sensitivity (int): Number of identical buckets two ids must occur
-                in to be considered a near duplicate pair.
-            jaccard (float): Minimum Jaccard Similarity for documents to be
-                counted as near duplicates.
-            keep_jaccard (bool): If True return near duplicate tuple as Jaccard score,
-                near duplicate tuple.
-            average_jaccard (bool): Return average Jaccard value.
+            sensitivity (int): Number of unique buckets two ids must co-occur in to be
+                considered a near duplicate pair.
+            jaccard (float): Minimum Jaccard Similarity for texts to be returned as near
+                duplicates.
 
         Returns:
-            List: adjacency list.
+            Dict: Adjacency list.
+
         """
+        if sensitivity > self.no_of_bands:
+            raise ValueError(
+                'Sensitivity must be <= no of bands.'
+            )
         adjacency_list = {}
-        for label in self._i_bucket:
-            check_buckets = self._i_bucket[label]
-            candidates = []
-            for bucket in check_buckets:
-                candidates += copy(self._buckets[bucket])
-                candidates.remove(label)
-            if sensitivity > 1:
-                candidates = [value for value, count in Counter(candidates).items() if count >= sensitivity]
-            else:
-                candidates = list(set(candidates))
-            if jaccard:
-                duplicates = []
-                for candidate in candidates:
-                    score = self._jaccard_similarity(label, candidate)
-                    if score >= jaccard:
-                        result = candidate
-                        if keep_jaccard:
-                            result = (score, candidate)
-                        elif average_jaccard:
-                            result = score
-                        duplicates.append(result)
-                if not average_jaccard:
-                    adjacency_list[label] = duplicates
-                else:
-                    if duplicates:
-                        adjacency_list[label] = (len(duplicates), sum(duplicates) / len(duplicates))
-                    else:
-                        adjacency_list[label] = (0, 0)
-            else:
-                adjacency_list[label] = candidates
+        for label in self._i_bucket.keys():
+            buckets = self._i_bucket.get(label)
+            candidates = self._candidate_duplicates(
+                buckets, label, sensitivity, jaccard
+            )
+            adjacency_list[label] = candidates
         return adjacency_list
+
+    def edge_list(
+            self,
+            sensitivity=1,
+            jaccard=0,
+            jaccard_weighted=False
+    ):
+        """ Returns list of relationship pairs between related texts.
+
+        Iterates over texts to create relationship pairs from hash bucket contents, where
+        relationships are above a certain threshold.
+
+        Edge list can be used to create an undirected graph, optionally with edges weighted
+        by Jaccard similarity.
+
+        May be slow and scale poorly for larger corpora.
+
+        Args:
+            sensitivity (int): Number of unique buckets two ids must co-occur for relationship
+            to be returned.
+            jaccard (float): Minimum Jaccard Similarity for relationship to be returned.
+            jaccard_weighted (bool): If True return a list of 3 tuples including the
+                relationship pairs and their associated Jaccard similarity.
+
+        Returns:
+            List: 2 tuple relationship pairs between texts, optionally a weighted 3 tuple.
+
+        """
+        if sensitivity > self.no_of_bands:
+            raise ValueError(
+                'Sensitivity must be <= no of bands.'
+            )
+        edges = []
+        labels = list(self._i_bucket)
+        for i in range(len(labels)):
+            candidates = defaultdict(int)
+            label = labels.pop()
+            for bucket in self._i_bucket.get(label):
+                matches = copy(self._buckets.get(bucket))
+                matches.remove(label)
+                for match in matches:
+                    candidates[match] += 1
+            if sensitivity > 1:
+                for key in list(candidates):
+                    if candidates[key] < sensitivity:
+                        del candidates[key]
+            for candidate in list(candidates):
+                if candidate in labels:
+                    if jaccard or jaccard_weighted:
+                        jaccard_ratio = candidates[candidate] / self.no_of_bands
+                        if jaccard_ratio >= jaccard:
+                            if jaccard_weighted:
+                                edges.append(
+                                    (label, candidate, jaccard_ratio)
+                                )
+                            else:
+                                edges.append(
+                                    (label, candidate)
+                                )
+                    else:
+                        edges.append(
+                            (label, candidate)
+                        )
+        return edges
