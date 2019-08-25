@@ -115,11 +115,11 @@ Size of each overlapping text shingle to break text into prior to hashing. Shing
 <b>n_gram_type: str, optional, default: 'char'</b><br>
 Type of n gram to use for shingles, must be 'char' to split text into character shingles or 'term' to split text into overlapping sequences of words.<br><br>
 <b>permutations: int, optional, default: 100</b><br>
-Number of hash values in each document signature.<br><br>
+Number of randomly sampled hash values to use for generating each texts minhash signature. Intuitively the larger the number of permutations, the more accurate the estimated Jaccard similarity between the texts but longer the algorithm will take to run.<br><br>
 <b>hash_bits: int, optional, default: 64</b><br>
 Hash value size, must be 32, 64 or 128 bit.<br><br>
 <b>method: str, optional, default: 'multi_hash'</b><br>
-Method to be used for minhash function, must be multi_hash or k_smallest_values.<br><br>
+Method to be used for minhash function, must be 'multi_hash' or 'k_smallest_values'.<br><br>
 <b>seed: int, optional, default: None</b><br>
 Seed from which to generate random hash function, necessary for reproducibility or to allow updating of the LSH model with new minhash values later.<br><br>
 
