@@ -105,7 +105,7 @@ print(edge_list)
 ### MinHash
 Generates MinHash object that contains matrix of Minhash Signatures for each text.
 #### Parameters
-###### text: {list or ndarray}
+<b>text: {list or ndarray}</b><br>
 Iterable containing text strings.<br><br>
 <b>n_gram: int, optional, default: 9</b><br>
 Number of characters to be used in each shingle.<br><br>
