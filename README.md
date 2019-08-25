@@ -162,7 +162,10 @@ Number of bands to break minhash signature into before hashing into buckets. A s
 #### LSH Methods
 <b>update</b><br>
 ```.update(minhash, new_labels)```<br>
-Updates model with new MinHash signature matrix and labels.<br><br>
+Updates model from a MinHash object containing signatures generated from new texts and their corresponding labels.<br>
+Parameters:<br>
+minhash: MinHash object containing minhash signatures for new texts, parameters must match any MinHash objects previously used.<br>
+new_labels: List, array or Pandas series containing text labels.<br><br>
 <b>query</b><br>
 ```.query(label, min_jaccard=None, sensitivity=1)```<br>
 Takes a label and returns the labels of any near duplicate/similar texts.<br><br>
