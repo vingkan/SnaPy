@@ -119,7 +119,7 @@ Number of randomly sampled hash values to use for generating each texts minhash 
 <b>hash_bits: int, optional, default: 64</b><br>
 Hash value size to be used to generate minhash signatures from shingles, must be 32, 64 or 128 bit. Hash value size should be chosen based on text length and a trade off between performance and accuracy. Lower hash values risk false hash collisions leading to false similarities between documents for larger corpora of texts.<br><br>
 <b>method: str, optional, default: 'multi_hash'</b><br>
-Method to be used for random sampling via hashing, must be 'multi_hash' or 'k_smallest_values'. If multi_hash selected text shingles are hashed once per permutation and the minimmum hash value selected each time to construct a signature. If k_smallest_values selected each text is hashed once and the k smallest values selected for k in permutations. This method is much faster than multi_hash but far less stable.<br><br>
+Method for random sampling via hashing, must be 'multi_hash' or 'k_smallest_values'. If multi_hash selected texts are hashed once per permutation and the minimmum hash value selected each time to construct a signature. If k_smallest_values selected each text is hashed once and k smallest values selected for k permutations. This method is much faster than multi_hash but far less stable.<br><br>
 <b>seed: int, optional, default: None</b><br>
 Seed from which to generate random hash function, necessary for reproducibility or to allow updating of the LSH model with new minhash values later.<br><br>
 
