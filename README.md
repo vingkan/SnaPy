@@ -137,7 +137,7 @@ n = text row, m = selected permutations.<br><br>
 ### LSH
 LSH model of text similarity.
 #### Parameters
-```LSH(minhash=None, labels=None, no_of_bands=None)```<br>
+```LSH(minhash=None, labels=None, no_of_bands=None)```<br><br>
 <b>minhash, optional, default: None</b><br>
 Object returned by MinHash class.<br><br>
 <b>labels: {list or ndarray}, optional, default: None</b><br>
