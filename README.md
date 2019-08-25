@@ -144,16 +144,22 @@ Iterable containing labels for text in minhash object.<br><br>
 <b>no_of_bands: int, optional, default: None</b><br>
 Number of bands to break minhash signature into.<br><br>
 #### Methods
+<b>Update</b><br>
 ```.update(minhash, new_labels)```<br>
 Updates model with new MinHash signature matrix and labels.<br><br>
+<b>Query</b><br>
 ```.query(label, min_jaccard=None, sensitivity=1)```<br>
 Takes a label and returns the labels of any near duplicate/similar texts.<br><br>
+<b>Remove</b><br>
 ```.def remove(label):```<br>
 Remove file label and minhash signature from model.<br><br>
+<b>Contains</b><br>
 ```.contains()```<br>
 Returns list of labels contained in the model.<br><br>
+<b>Adjacency List</b><br>
 ```.adjacency_list(min_jaccard=None, sensitivity=1)```<br>
 Returns an adjacency list that can be used to create a text similarity graph.<br><br>
+<b>Edge List</b><br>
 ```.edge_list(min_jaccard=None, jaccard_weighted=False, sensitivity=1)```<br>
 Returns a list of edge tuples that can be used to create a weighted text similarity graph.<br><br>
 #### Properties
