@@ -169,7 +169,7 @@ class LSH:
         """
         buckets = self._i_bucket.get(label)
         if not buckets:
-            raise ValueError(
+            raise KeyError(
                 'Label {} does not exist in model.'.format(label)
             )
         for bucket in buckets:
@@ -187,7 +187,7 @@ class LSH:
         """
         return list(self._i_bucket)
 
-    def adjacency_list(self, sensitivity=1, jaccard=None):
+    def adjacency_list(self, sensitivity=1, min_jaccard=None):
         """ Returns adjacency list.
 
         Iterates over texts, pairing each text with a list of labels whose relationships with
@@ -198,7 +198,7 @@ class LSH:
         Args:
             sensitivity (int): Number of unique buckets two ids must co-occur in to be
                 considered a near duplicate pair.
-            jaccard (float): Minimum Jaccard Similarity for texts to be returned as near
+            min_jaccard (float): Minimum Jaccard Similarity for texts to be returned as near
                 duplicates.
 
         Returns:
@@ -213,7 +213,7 @@ class LSH:
         for label in self._i_bucket.keys():
             buckets = self._i_bucket.get(label)
             candidates = self._candidate_duplicates(
-                buckets, label, sensitivity, jaccard
+                buckets, label, sensitivity, min_jaccard
             )
             adjacency_list[label] = candidates
         return adjacency_list
@@ -221,7 +221,7 @@ class LSH:
     def edge_list(
             self,
             sensitivity=1,
-            jaccard=0,
+            min_jaccard=0,
             jaccard_weighted=False
     ):
         """ Returns list of relationship pairs between related texts.
@@ -237,7 +237,7 @@ class LSH:
         Args:
             sensitivity (int): Number of unique buckets two ids must co-occur for relationship
             to be returned.
-            jaccard (float): Minimum Jaccard Similarity for relationship to be returned.
+            min_jaccard (float): Minimum Jaccard Similarity for relationship to be returned.
             jaccard_weighted (bool): If True return a list of 3 tuples including the
                 relationship pairs and their associated Jaccard similarity.
 
@@ -265,9 +265,9 @@ class LSH:
                         del candidates[key]
             for candidate in list(candidates):
                 if candidate in labels:
-                    if jaccard or jaccard_weighted:
+                    if min_jaccard or jaccard_weighted:
                         jaccard_ratio = candidates[candidate] / self.no_of_bands
-                        if jaccard_ratio >= jaccard:
+                        if jaccard_ratio >= min_jaccard:
                             if jaccard_weighted:
                                 edges.append(
                                     (label, candidate, jaccard_ratio)
