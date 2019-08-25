@@ -164,10 +164,10 @@ Remove file label and minhash signature from model.<br><br>
 <b>contains</b><br>
 ```.contains()```<br>
 Returns list of labels contained in the model.<br><br>
-<b>adjacency list</b><br>
+<b>adjacency_list</b><br>
 ```.adjacency_list(min_jaccard=None, sensitivity=1)```<br>
 Returns an adjacency list that can be used to create a text similarity graph.<br><br>
-<b>edge list</b><br>
+<b>edge_list</b><br>
 ```.edge_list(min_jaccard=None, jaccard_weighted=False, sensitivity=1)```<br>
 Returns a list of edge tuples that can be used to create a weighted text similarity graph.<br><br>
 #### LSH Properties
