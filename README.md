@@ -111,7 +111,7 @@ Generates MinHash object that contains matrix of Minhash Signatures for each tex
 <b>text: {list or ndarray}</b><br>
 Iterable containing strings of text for each text in a corpus.<br><br>
 <b>n_gram: int, optional, default: 9</b><br>
-Size of each overlapping text shingle to break text into prior to hashing. Shingle size should be carefully selected dependant on avearge text length as too low a shingle size will yield false similarities, whereas too high a shingle size will fail to return similar documents.
+Size of each overlapping text shingle to break text into prior to hashing. Shingle size should be carefully selected dependant on avearge text length as too low a shingle size will yield false similarities, whereas too high a shingle size will fail to return similar documents.<br><br>
 <b>n_gram_type: str, optional, default: 'char'</b><br>
 Type of n gram to use for shingles, must be char to split text into character shingles or term to split text into overlapping sequences of words.<br><br>
 
