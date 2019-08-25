@@ -44,7 +44,7 @@ lsh = LSH(minhash, labels, no_of_bands=50)
 
 # Query to find near duplicates for text 1.
 print(lsh.query(1, min_jaccard=0.5))
->> [8, 4]
+>>> [8, 4]
 
 
 # Generate minhash signature and add new texts to LSH model.
@@ -62,25 +62,43 @@ lsh.update(new_minhash, new_labels)
 
 # Check contents of documents.
 print(lsh.contains())
->> [1, 2, 3, 4, 5, 6, 7, 8, 9, 'doc1', 'doc2']
+>>> [1, 2, 3, 4, 5, 6, 7, 8, 9, 'doc1', 'doc2']
 
 
 # Remove text and label from model.
 lsh.remove(5)
 print(lsh.contains())
->> [1, 2, 3, 4, 6, 7, 8, 9, 'doc1', 'doc2']
+>>> [1, 2, 3, 4, 6, 7, 8, 9, 'doc1', 'doc2']
 
 
 # Return adjacency list for all similar texts.
 adjacency_list = lsh.adjacency_list(min_jaccard=0.55)
 print(adjacency_list)
->> {1: ['doc1', 4], 2: ['doc2'], 3: [], 4: [1, 'doc1'], 6: [], 7: [], 8: [], 9: [], 'doc1': [1, 4], 'doc2': [2]}
+>>> {
+        1: ['doc1', 4],
+        2: ['doc2'], 
+        3: [], 
+        4: [1, 'doc1'], 
+        6: [], 
+        7: [], 
+        8: [], 
+        9: [], 
+        'doc1': [1, 4], 
+        'doc2': [2]
+    }
 
 
 # Returns edge list for use creating a weighted graph.
 edge_list = lsh.edge_list(min_jaccard=0.5, jaccard_weighted=True)
 print(edge_list)
->> [('doc2', 2, 1.0), ('doc1', 1, 1.0), ('doc1', 8, 0.5), ('doc1', 4, 0.58), (8, 1, 0.5), (4, 1, 0.58)]
+>>> [
+        ('doc2', 2, 1.0), 
+        ('doc1', 1, 1.0), 
+        ('doc1', 8, 0.5), 
+        ('doc1', 4, 0.58), 
+        (8, 1, 0.5), 
+        (4, 1, 0.58)
+    ]
 
 ```
 ## MinHash
