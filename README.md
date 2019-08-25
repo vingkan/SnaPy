@@ -104,7 +104,7 @@ print(edge_list)
 ## API Guide
 ### MinHash
 Generates MinHash object that contains matrix of Minhash Signatures for each text.
-#### Parameters
+#### MinHash Parameters
 ```MinHash(text, n_gram=9, n_gram_type='char', permutations=100, hash_bits=64, method='multi_hash', seed=None)```<br><br>
 <b>text: {list or ndarray}</b><br>
 Iterable containing text strings.<br><br>
@@ -120,7 +120,7 @@ Hash value size, must be 32, 64 or 128 bit.<br><br>
 Method to be used for minhash function, must be multi_hash or k_smallest_values.<br><br>
 <b>seed: int, optional, default: None</b><br>
 Seeds from which to generate random hash function.<br><br>
-#### Properties
+#### MinHash Properties
 <b>n_gram: int</b><br>
 ```.n_gram```<br>
 Number of characters used for creating shingles.<br><br>
@@ -143,7 +143,7 @@ n = text row, m = selected permutations.<br><br>
 
 ### LSH
 LSH model of text similarity.
-#### Parameters
+#### LSH Parameters
 ```LSH(minhash=None, labels=None, no_of_bands=None)```<br><br>
 <b>minhash, optional, default: None</b><br>
 Object returned by MinHash class.<br><br>
@@ -151,7 +151,7 @@ Object returned by MinHash class.<br><br>
 Iterable containing labels for text in minhash object.<br><br>
 <b>no_of_bands: int, optional, default: None</b><br>
 Number of bands to break minhash signature into.<br><br>
-#### Methods
+#### LSH Methods
 <b>update</b><br>
 ```.update(minhash, new_labels)```<br>
 Updates model with new MinHash signature matrix and labels.<br><br>
@@ -170,7 +170,7 @@ Returns an adjacency list that can be used to create a text similarity graph.<br
 <b>edge list</b><br>
 ```.edge_list(min_jaccard=None, jaccard_weighted=False, sensitivity=1)```<br>
 Returns a list of edge tuples that can be used to create a weighted text similarity graph.<br><br>
-#### Properties
+#### LSH Properties
 <b>no_of_bands: int</b><br>
 ```.no_of_bands```<br>
 Number of bands used in LSH model.<br><br>
