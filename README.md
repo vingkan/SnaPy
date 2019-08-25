@@ -152,15 +152,12 @@ Creates an LSH model of text similarity that can be used to return similar texts
 
 #### LSH Parameters
 ```LSH(minhash=None, labels=None, no_of_bands=None)```<br><br>
-
 <b>minhash, optional, default: None</b><br>
 Minhash object containing minhash signatures returned by MinHash class.<br><br>
-
 <b>labels: {list or ndarray}, optional, default: None</b><br>
 List, array or Pandas series containing unique labels for each text in minhash object signature. This should be provided in the same order as texts passed to the MinHash class. Example labels include filepaths and database ids.<br><br>
-
-<b>no_of_bands: int, optional, default: None</b><br>
-Number of bands to break minhash signature into.<br><br>
+<b>no_of_bands: int, optional, default: permutations // 2</b><br>
+Number of bands to break minhash signature into before hasing into buckets. Default option is the floor division of the number of permutations by 2. A smaller number of bands will result a stricter algorithm, possibly leading to false negatives missing some similar texts, whereas a higher number may lead to false similarities.<br><br>
 
 #### LSH Methods
 <b>update</b><br>
