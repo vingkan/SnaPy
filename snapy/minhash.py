@@ -64,14 +64,16 @@ class MinHash:
                 'Only "multi_hash" and "k_smallest_value" hash methods are supported.'
             )
         self.method = method
+        self.seed = None
         if seed:
+            self.seed = seed
             np.random.seed(seed)
         if method == 'multi_hash':
-            self.hash_seeds = np.random.randint(
+            self._hash_seeds = np.random.randint(
                 low=1, high=100_000_000, size=permutations
             )
         else:
-            self.hash_seeds = np.random.randint(
+            self._hash_seeds = np.random.randint(
                 low=1, high=100_000_000
             )
         # Run methods.
@@ -128,7 +130,7 @@ class MinHash:
 
         """
         signature = []
-        for seed in np.nditer(self.hash_seeds):
+        for seed in np.nditer(self._hash_seeds):
             self._min_value = None
             for shingle in document:
                 if self.hash_bits == 64:
@@ -175,15 +177,15 @@ class MinHash:
         for shingle in document:
             if self.hash_bits == 64:
                 hashed_shingle = mmh3.hash64(
-                    shingle, self.hash_seeds
+                    shingle, self._hash_seeds
                 )[0]
             elif self.hash_bits == 32:
                 hashed_shingle = mmh3.hash(
-                    shingle, self.hash_seeds
+                    shingle, self._hash_seeds
                 )
             else:
                 hashed_shingle = mmh3.hash128(
-                    shingle, self.hash_seeds
+                    shingle, self._hash_seeds
                 )
             heapq.heappush(signature, hashed_shingle)
         return heapq.nsmallest(self.permutations, signature)
