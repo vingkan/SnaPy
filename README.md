@@ -74,7 +74,7 @@ print(lsh.contains())
 # Return adjacency list for all similar texts.
 adjacency_list = lsh.adjacency_list(min_jaccard=0.5)
 print(adjacency_list)
->>> {1: [8, 'doc1', 4], 2: ['doc2'], 3: [], 4: [1, 'doc1'], 6: [], 7: [], 8: [1, 'doc1'], 9: [], 'doc1': [1, 8, 4], 'doc2': [2]}
+>>> {1: ['doc1', 4], 2: ['doc2'], 3: [], 4: [1, 'doc1'], 6: [], 7: [], 8: [], 9: [], 'doc1': [1, 4], 'doc2': [2]}
 
 
 # Returns edge list for use creating a weighted graph.
