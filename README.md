@@ -157,29 +157,24 @@ Minhash object containing minhash signatures returned by MinHash class.<br><br>
 <b>labels: {list or ndarray}, optional, default: None</b><br>
 List, array or Pandas series containing unique labels for each text in minhash object signature. This should be provided in the same order as texts passed to the MinHash class. Example labels include filepaths and database ids.<br><br>
 <b>no_of_bands: int, optional, default: permutations // 2</b><br>
-Number of bands to break minhash signature into before hasing into buckets. Default option is the floor division of the number of permutations by 2. A smaller number of bands will result a stricter algorithm, possibly leading to false negatives missing some similar texts, whereas a higher number may lead to false similarities.<br><br>
+Number of bands to break minhash signature into before hashing into buckets. A smaller number of bands will result in a stricter algorithm, requiring larger possibly leading to false negatives missing some similar texts, whereas a higher number may lead to false similarities. <br><br>
 
 #### LSH Methods
 <b>update</b><br>
 ```.update(minhash, new_labels)```<br>
 Updates model with new MinHash signature matrix and labels.<br><br>
-
 <b>query</b><br>
 ```.query(label, min_jaccard=None, sensitivity=1)```<br>
 Takes a label and returns the labels of any near duplicate/similar texts.<br><br>
-
 <b>remove</b><br>
 ```.def remove(label):```<br>
 Remove file label and minhash signature from model.<br><br>
-
 <b>contains</b><br>
 ```.contains()```<br>
 Returns list of labels contained in the model.<br><br>
-
 <b>adjacency_list</b><br>
 ```.adjacency_list(min_jaccard=None, sensitivity=1)```<br>
 Returns an adjacency list that can be used to create a text similarity graph.<br><br>
-
 <b>edge_list</b><br>
 ```.edge_list(min_jaccard=None, jaccard_weighted=False, sensitivity=1)```<br>
 Returns a list of edge tuples that can be used to create a weighted text similarity graph.<br><br>
@@ -188,7 +183,6 @@ Returns a list of edge tuples that can be used to create a weighted text similar
 <b>no_of_bands: int</b><br>
 ```.no_of_bands```<br>
 Number of bands used in LSH model.<br><br>
-
 <b>permutations: int</b><br>
 ```.permutations```<br>
 Number of permutations used to create minhash signatures used in LSH model.<br><br>
