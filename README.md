@@ -108,12 +108,10 @@ Generates MinHash object that contains matrix of Minhash Signatures for each tex
 
 #### MinHash Parameters
 ```MinHash(text, n_gram=9, n_gram_type='char', permutations=100, hash_bits=64, method='multi_hash', seed=None)```<br><br>
-
 <b>text: {list or ndarray}</b><br>
 Iterable containing strings of text for each text in a corpus.<br><br>
-
 <b>n_gram: int, optional, default: 9</b><br>
-Number of characters to be used in each shingle.<br><br>
+Size of each overlapping text shingle to break text into prior to hashing. Shingle size should be carefully selected dependant on avearge text length as too low a shingle size will yield false similarities, whereas too high a shingle size will fail to return similar documents. For larger texts the default shngle size of 9 is recomended, for smaller texts sch as news articles consider using a shingle size of around 5.<br><br>
 
 <b>n_gram_type: str, optional, default: 'char'</b><br>
 Type of n gram to use for shingles, must be char or term.<br><br>
