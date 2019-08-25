@@ -105,6 +105,7 @@ print(edge_list)
 ### MinHash
 Generates MinHash object that contains matrix of Minhash Signatures for each text.
 #### Parameters
+```MinHash(text, n_gram=9, n_gram_type='char', permutations=100, hash_bits=64, method='multi_hash', seed=None)```<br><br>
 <b>text: {list or ndarray}</b><br>
 Iterable containing text strings.<br><br>
 <b>n_gram: int, optional, default: 9</b><br>
