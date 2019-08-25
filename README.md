@@ -139,8 +139,8 @@ Returns hash value size used to create signatures.<br><br>
 <b>method: str</b><br>
 ```.method```<br>
 Returns hashing method used in minhash function.<br><br>
-<b>hash_seeds: ndarray</b><br>
-```.hash_seeds```<br>
+<b>seed: int</b><br>
+```.seed```<br>
 Returns seed value used to generate random hashes in minhash function.<br><br>
 <b>signatures: ndarray</b><br>
 ```.signatures```<br>
@@ -154,10 +154,10 @@ Creates an LSH model of text similarity that can be used to return similar texts
 ```LSH(minhash=None, labels=None, no_of_bands=None)```<br><br>
 
 <b>minhash, optional, default: None</b><br>
-Object returned by MinHash class.<br><br>
+Minhash object containing minhash signatures returned by MinHash class.<br><br>
 
 <b>labels: {list or ndarray}, optional, default: None</b><br>
-Iterable containing labels for text in minhash object.<br><br>
+List, array or Pandas series containing unique labels for each text in minhash object signature. This should be provided in the same order as texts passed to the MinHash class. Example labels include filepaths and database ids.<br><br>
 
 <b>no_of_bands: int, optional, default: None</b><br>
 Number of bands to break minhash signature into.<br><br>
