@@ -105,7 +105,7 @@ print(edge_list)
 ### MinHash
 Generates MinHash object that contains matrix of Minhash Signatures for each text.
 #### Parameters
-<b>text: {list or ndarray}</b><br>
+###### text: {list or ndarray}
 Iterable containing text strings.<br><br>
 <b>n_gram: int, optional, default: 9</b><br>
 Number of characters to be used in each shingle.<br><br>
@@ -120,7 +120,7 @@ Method to be used for minhash function, must be multi_hash or k_smallest_values.
 <b>seed: int, optional, default: None</b><br>
 Seeds from which to generate random hash function.<br><br>
 #### Properties
-<b>char_n_gram: int</b><br>
+<b>n_gram: int</b><br>
 Number of characters used for creating shingles.<br><br>
 <b>permutations: int</b><br>
 Number of permutations used to create signatures.<br><br>
