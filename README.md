@@ -117,7 +117,7 @@ Type of n gram to use for shingles, must be 'char' to split text into character 
 <b>permutations: int, optional, default: 100</b><br>
 Number of randomly sampled hash values to use for generating each texts minhash signature. Intuitively the larger the number of permutations, the more accurate the estimated Jaccard similarity between the texts but longer the algorithm will take to run.<br><br>
 <b>hash_bits: int, optional, default: 64</b><br>
-Hash value size, must be 32, 64 or 128 bit.<br><br>
+Hash value size to be used to generate minhash signatures from shingles, must be 32, 64 or 128 bit.<br><br>
 <b>method: str, optional, default: 'multi_hash'</b><br>
 Method to be used for minhash function, must be 'multi_hash' or 'k_smallest_values'.<br><br>
 <b>seed: int, optional, default: None</b><br>
