@@ -143,19 +143,19 @@ Object returned by MinHash class.<br><br>
 Iterable containing labels for text in minhash object.<br><br>
 <b>no_of_bands: int, optional, default: None</b><br>
 Number of bands to break minhash signature into.<br><br>
-<b>use_jaccard: bool, optional, default: False</b><br>
-Should MinHash signatures be retained for later estimation of Jaccard similarity.<br><br>
 #### Methods
 ```.update(minhash, new_labels)```<br>
 Updates model with new MinHash signature matrix and labels.<br><br>
-```.query(label, sensitivity=1, min_jaccard=None)```<br>
+```.query(label, min_jaccard=None, sensitivity=1)```<br>
 Takes a label and returns the labels of any near duplicate/similar texts.<br><br>
 ```.def remove(label):```<br>
 Remove file label and minhash signature from model.<br><br>
 ```.contains()```<br>
 Returns list of labels contained in the model.<br><br>
-```.adjacency_list(sensitivity=1, jaccard=None, keep_jaccard=False, average_jaccard=False)```<br>
+```.adjacency_list(min_jaccard=None, sensitivity=1)```<br>
 Returns an adjacency list that can be used to create a text similarity graph.<br><br>
+```.adjacency_list(min_jaccard=None, jaccard_weighted=False, sensitivity=1)```<br>
+Returns a list of edge tuples that can be used to create a weighted text similarity graph.<br><br>
 #### Properties
 <b>no_of_bands: int</b><br>
 Number of bands used in LSH model.<br><br>
