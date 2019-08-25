@@ -128,7 +128,7 @@ class LSH:
         # Update model.
         self._lsh(minhash.signatures, new_labels)
 
-    def query(self, label, sensitivity=1, min_jaccard=None):
+    def query(self, label, min_jaccard=None, sensitivity=1):
         """ Returns near duplicates from model.
 
         Takes a provided text label and returns a list of labels for texts whose
@@ -138,10 +138,10 @@ class LSH:
 
         Args:
             label (str, int, float): Label of text for which to return near duplicates.
-            sensitivity (int): Number of unique buckets two ids must co-occur in to be
-                considered a near duplicate pair.
             min_jaccard (float): Minimum Jaccard Similarity for texts to be returned as
                 near duplicates.
+            sensitivity (int): Number of unique buckets two ids must co-occur in to be
+                considered a near duplicate pair.
 
         Returns:
             List: Candidate duplicates for provided text label.
@@ -169,7 +169,7 @@ class LSH:
         """
         buckets = self._i_bucket.get(label)
         if not buckets:
-            raise ValueError(
+            raise KeyError(
                 'Label {} does not exist in model.'.format(label)
             )
         for bucket in buckets:
@@ -187,7 +187,7 @@ class LSH:
         """
         return list(self._i_bucket)
 
-    def adjacency_list(self, sensitivity=1, jaccard=None):
+    def adjacency_list(self, min_jaccard=None, sensitivity=1):
         """ Returns adjacency list.
 
         Iterates over texts, pairing each text with a list of labels whose relationships with
@@ -196,10 +196,10 @@ class LSH:
         Can be used to create an undirected graph for texts in the LSH object.
 
         Args:
+            min_jaccard (float): Minimum Jaccard Similarity for texts to be returned as near
+                duplicates.
             sensitivity (int): Number of unique buckets two ids must co-occur in to be
                 considered a near duplicate pair.
-            jaccard (float): Minimum Jaccard Similarity for texts to be returned as near
-                duplicates.
 
         Returns:
             Dict: Adjacency list.
@@ -213,16 +213,16 @@ class LSH:
         for label in self._i_bucket.keys():
             buckets = self._i_bucket.get(label)
             candidates = self._candidate_duplicates(
-                buckets, label, sensitivity, jaccard
+                buckets, label, sensitivity, min_jaccard
             )
             adjacency_list[label] = candidates
         return adjacency_list
 
     def edge_list(
             self,
-            sensitivity=1,
-            jaccard=0,
-            jaccard_weighted=False
+            min_jaccard=0,
+            jaccard_weighted=False,
+            sensitivity=1
     ):
         """ Returns list of relationship pairs between related texts.
 
@@ -235,11 +235,11 @@ class LSH:
         May be slow and scale poorly for larger corpora.
 
         Args:
-            sensitivity (int): Number of unique buckets two ids must co-occur for relationship
-            to be returned.
-            jaccard (float): Minimum Jaccard Similarity for relationship to be returned.
+            min_jaccard (float): Minimum Jaccard Similarity for relationship to be returned.
             jaccard_weighted (bool): If True return a list of 3 tuples including the
                 relationship pairs and their associated Jaccard similarity.
+            sensitivity (int): Number of unique buckets two ids must co-occur for relationship
+                to be returned.
 
         Returns:
             List: 2 tuple relationship pairs between texts, optionally a weighted 3 tuple.
@@ -265,9 +265,9 @@ class LSH:
                         del candidates[key]
             for candidate in list(candidates):
                 if candidate in labels:
-                    if jaccard or jaccard_weighted:
+                    if min_jaccard or jaccard_weighted:
                         jaccard_ratio = candidates[candidate] / self.no_of_bands
-                        if jaccard_ratio >= jaccard:
+                        if jaccard_ratio >= min_jaccard:
                             if jaccard_weighted:
                                 edges.append(
                                     (label, candidate, jaccard_ratio)
