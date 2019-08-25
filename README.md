@@ -107,14 +107,16 @@ Generates MinHash object that contains matrix of Minhash Signatures for each tex
 #### Parameters
 <b>text: {list or ndarray}</b><br>
 Iterable containing text strings.<br><br>
-<b>char_n_gram: int, optional, default: 9</b><br>
+<b>n_gram: int, optional, default: 9</b><br>
 Number of characters to be used in each shingle.<br><br>
+<b>n_gram_type: str, optional, default: 'char'</b><br>
+Type of n gram to use for shingles, must be char or term.<br><br>
 <b>permutations: int, optional, default: 100</b><br>
-Size of hash values in each document signature.<br><br>
-<b>vhash_bits: int, optional, default: 64</b><br>
+Number of hash values in each document signature.<br><br>
+<b>hash_bits: int, optional, default: 64</b><br>
 Hash value size, must be 32, 64 or 128 bit.<br><br>
-<b>method: str, optional, default: 'universal'</b><br>
-Method to be used for minhash function, must be universal or k_smallest_values.<br><br>
+<b>method: str, optional, default: 'multi_hash'</b><br>
+Method to be used for minhash function, must be multi_hash or k_smallest_values.<br><br>
 <b>seed: int, optional, default: None</b><br>
 Seeds from which to generate random hash function.<br><br>
 #### Properties
