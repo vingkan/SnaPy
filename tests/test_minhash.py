@@ -27,14 +27,14 @@ def test_minhash_defaults():
     assert minhash.permutations == 100
     assert minhash.hash_bits == 64
     assert minhash.method == 'multi_hash'
-    assert minhash.hash_seeds.shape[0] == 100
+    assert minhash._hash_seeds.shape[0] == 100
 
 
 def multi_hash_tests(first_hash, second_hash, hash_size):
     minhash = MinHash(
         content, hash_bits=hash_size, seed=seed
     )
-    assert minhash.hash_seeds.shape[0] == 100
+    assert minhash.seed == 3
     assert minhash.method == 'multi_hash'
     assert type(minhash.signatures) is np.ndarray
     assert minhash.signatures.shape == (9, 100)
@@ -75,7 +75,7 @@ def k_smallest_hash_tests(first_hash, second_hash, hash_size):
         method='k_smallest_values',
         seed=seed
     )
-    assert minhash.hash_seeds == 83957611
+    assert minhash._hash_seeds == 83957611
     assert minhash.method == 'k_smallest_values'
     assert type(minhash.signatures) is np.ndarray
     assert minhash.signatures.shape == (9, 53)

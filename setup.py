@@ -6,7 +6,7 @@ readme.close()
 
 setup(
     name='snapy',
-    version='0.0.2',
+    version='1.0.0',
     author='Justin Boylan-Toomey',
     author_email='justin.boylan-toomey@outlook.com',
     description='SnaPy is a Python library for detecting near duplicate texts'
