@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: snapy
-Version: 1.0.0
+Version: 1.0.1
 Summary: SnaPy is a Python library for detecting near duplicate texts using Minhash and Locality Sensitive Hashing.
 Home-page: https://github.com/justinnbt/SnaPy
 Author: Justin Boylan-Toomey
