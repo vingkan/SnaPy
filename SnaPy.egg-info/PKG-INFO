@@ -119,7 +119,7 @@ Description: # SnaPy
         <b>text: {list or ndarray}</b><br>
         Iterable containing strings of text for each text in a corpus.<br><br>
         <b>n_gram: int, optional, default: 9</b><br>
-        Size of each overlapping text shingle to break text into prior to hashing. Shingle size should be carefully selected dependant on avearge text length as too low a shingle size will yield false similarities, whereas too high a shingle size will fail to return similar documents.<br><br>
+        Size of each overlapping text shingle to break text into prior to hashing. Shingle size should be carefully selected dependant on average text length as too low a shingle size will yield false similarities, whereas too high a shingle size will fail to return similar documents.<br><br>
         <b>n_gram_type: str, optional, default: 'char'</b><br>
         Type of n gram to use for shingles, must be 'char' to split text into character shingles or 'term' to split text into overlapping sequences of words.<br><br>
         <b>permutations: int, optional, default: 100</b><br>
@@ -127,7 +127,7 @@ Description: # SnaPy
         <b>hash_bits: int, optional, default: 64</b><br>
         Hash value size to be used to generate minhash signatures from shingles, must be 32, 64 or 128 bit. Hash value size should be chosen based on text length and a trade off between performance and accuracy. Lower hash values risk false hash collisions leading to false similarities between documents for larger corpora of texts.<br><br>
         <b>method: str, optional, default: 'multi_hash'</b><br>
-        Method for random sampling via hashing, must be 'multi_hash' or 'k_smallest_values'. If multi_hash selected texts are hashed once per permutation and the minimmum hash value selected each time to construct a signature. If k_smallest_values selected each text is hashed once and k smallest values selected for k permutations. This method is much faster than multi_hash but far less stable.<br><br>
+        Method for random sampling via hashing, must be 'multi_hash' or 'k_smallest_values'. If multi_hash selected texts are hashed once per permutation and the minimum hash value selected each time to construct a signature. If k_smallest_values selected each text is hashed once and k smallest values selected for k permutations. This method is much faster than multi_hash but far less stable.<br><br>
         <b>seed: int, optional, default: None</b><br>
         Seed from which to generate random hash function, necessary for reproducibility or to allow updating of the LSH model with new minhash values later.<br><br>
         
@@ -165,38 +165,43 @@ Description: # SnaPy
         <b>labels: {list or ndarray}, optional, default: None</b><br>
         List, array or Pandas series containing unique labels for each text in minhash object signature. This should be provided in the same order as texts passed to the MinHash class. Example labels include filepaths and database ids.<br><br>
         <b>no_of_bands: int, optional, default: permutations // 2</b><br>
-        Number of bands to break minhash signature into before hasing into buckets. Default option is the floor division of the number of permutations by 2. A smaller number of bands will result a stricter algorithm, possibly leading to false negatives missing some similar texts, whereas a higher number may lead to false similarities.<br><br>
+        Number of bands to break minhash signature into before hashing into buckets. A smaller number of bands will result in a stricter algorithm, requiring larger possibly leading to false negatives missing some similar texts, whereas a higher number may lead to false similarities. <br><br>
         
         #### LSH Methods
         <b>update</b><br>
+        Updates model from a MinHash object containing signatures generated from new texts and their corresponding labels.<br>
         ```.update(minhash, new_labels)```<br>
-        Updates model with new MinHash signature matrix and labels.<br><br>
-        
+        <b>minhash:</b> MinHash object containing signatures of new texts, parameters must match any previous MinHash objects.<br>
+        <b>new_labels:</b> List, array or Pandas series containing text labels.<br><br>
         <b>query</b><br>
+        Takes a label and returns the labels of any similar texts.<br>
         ```.query(label, min_jaccard=None, sensitivity=1)```<br>
-        Takes a label and returns the labels of any near duplicate/similar texts.<br><br>
-        
+        <b>label:</b> Label of text to return list of similar texts for.<br>
+        <b>min_jaccard:</b> Jaccard similarity threshold texts have to exceed to be returned as similar.<br>
+        <b>sensitivity:</b> Number of buckets texts must share to be returned as similar.<br><br>
         <b>remove</b><br>
+        Remove file label and minhash signature from model.<br>
         ```.def remove(label):```<br>
-        Remove file label and minhash signature from model.<br><br>
-        
+        <b>label:</b> Label of text to remove from LSH model.<br><br>
         <b>contains</b><br>
-        ```.contains()```<br>
-        Returns list of labels contained in the model.<br><br>
-        
+        Returns list of labels contained in the model.<br>
+        ```.contains()```<br><br>
         <b>adjacency_list</b><br>
+        Returns an adjacency list that can be used to create a text similarity graph.<br>
         ```.adjacency_list(min_jaccard=None, sensitivity=1)```<br>
-        Returns an adjacency list that can be used to create a text similarity graph.<br><br>
-        
+        <b>min_jaccard:</b> Jaccard similarity threshold texts have to exceed to be returned as similar.<br>
+        <b>sensitivity:</b> Number of buckets texts must share to be returned as similar.<br><br>
         <b>edge_list</b><br>
+        Returns a list of edges as tuples of similar pairs, that can be used to create a text similarity graph.<br>
         ```.edge_list(min_jaccard=None, jaccard_weighted=False, sensitivity=1)```<br>
-        Returns a list of edge tuples that can be used to create a weighted text similarity graph.<br><br>
+        <b>min_jaccard:</b> Jaccard similarity threshold texts have to exceed to be returned as a pair of similar texts.<br>
+        <b>jaccard_weighted:</b> Return a list of edges as 3 tuples including text similarity pairs and estimated Jaccard similarity score.<br>
+        <b>sensitivity:</b> Number of buckets texts must share to be returned as similar.<br><br>
         
         #### LSH Properties
         <b>no_of_bands: int</b><br>
         ```.no_of_bands```<br>
         Number of bands used in LSH model.<br><br>
-        
         <b>permutations: int</b><br>
         ```.permutations```<br>
         Number of permutations used to create minhash signatures used in LSH model.<br><br>
