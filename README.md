@@ -180,10 +180,15 @@ Returns list of labels contained in the model.<br>
 ```.contains()```<br><br>
 <b>adjacency_list</b><br>
 Returns an adjacency list that can be used to create a text similarity graph.<br>
-```.adjacency_list(min_jaccard=None, sensitivity=1)```<br><br>
+```.adjacency_list(min_jaccard=None, sensitivity=1)```<br>
+min_jaccard: Jaccard similarity threshold texts have to exceed to be returned as similar.<br>
+sensitivity: Number of buckets texts must share to be returned as similar.<br><br>
 <b>edge_list</b><br>
-Returns a list of edge tuples that can be used to create a weighted text similarity graph.<br>
-```.edge_list(min_jaccard=None, jaccard_weighted=False, sensitivity=1)```<br><br>
+Returns a list of edges as tuples of similar pairs, that can be used to create a text similarity graph.<br>
+```.edge_list(min_jaccard=None, jaccard_weighted=False, sensitivity=1)```<br>
+min_jaccard: Jaccard similarity threshold texts have to exceed to be returned as a pair of similar texts.<br>
+jaccard_weighted: Return a list of edges as 3 tuples including text similarity pairs and estimated Jaccard similarity score.<br>
+sensitivity: Number of buckets texts must share to be returned as similar.<br><br>
 
 #### LSH Properties
 <b>no_of_bands: int</b><br>
