@@ -161,29 +161,29 @@ Number of bands to break minhash signature into before hashing into buckets. A s
 
 #### LSH Methods
 <b>update</b><br>
-```.update(minhash, new_labels)```<br>
 Updates model from a MinHash object containing signatures generated from new texts and their corresponding labels.<br>
+```.update(minhash, new_labels)```<br>
 minhash: MinHash object containing minhash signatures for new texts, parameters must match any MinHash objects previously used.<br>
 new_labels: List, array or Pandas series containing text labels.<br><br>
 <b>query</b><br>
-```.query(label, min_jaccard=None, sensitivity=1)```<br>
 Takes a label and returns the labels of any similar texts.<br>
+```.query(label, min_jaccard=None, sensitivity=1)```<br>
 label: Label of text to return list of similar texts for.<br>
 min_jaccard: Jaccard similarity threshold texts have to exceed to be returned as similar.<br>
 sensitivity: Number of buckets texts must share to be returned as similar.<br><br>
 <b>remove</b><br>
-```.def remove(label):```<br>
 Remove file label and minhash signature from model.<br>
+```.def remove(label):```<br>
 label: Label of text to remove from LSH model.<br><br>
 <b>contains</b><br>
-```.contains()```<br>
-Returns list of labels contained in the model.<br><br>
+Returns list of labels contained in the model.<br>
+```.contains()```<br><br>
 <b>adjacency_list</b><br>
-```.adjacency_list(min_jaccard=None, sensitivity=1)```<br>
-Returns an adjacency list that can be used to create a text similarity graph.<br><br>
+Returns an adjacency list that can be used to create a text similarity graph.<br>
+```.adjacency_list(min_jaccard=None, sensitivity=1)```<br><br>
 <b>edge_list</b><br>
-```.edge_list(min_jaccard=None, jaccard_weighted=False, sensitivity=1)```<br>
-Returns a list of edge tuples that can be used to create a weighted text similarity graph.<br><br>
+Returns a list of edge tuples that can be used to create a weighted text similarity graph.<br>
+```.edge_list(min_jaccard=None, jaccard_weighted=False, sensitivity=1)```<br><br>
 
 #### LSH Properties
 <b>no_of_bands: int</b><br>
