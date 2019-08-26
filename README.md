@@ -163,7 +163,7 @@ Number of bands to break minhash signature into before hashing into buckets. A s
 <b>update</b><br>
 Updates model from a MinHash object containing signatures generated from new texts and their corresponding labels.<br>
 ```.update(minhash, new_labels)```<br>
-minhash: MinHash object containing signatures of new texts, parameters must match any MinHash objects previously used.<br>
+minhash: MinHash object containing signatures of new texts, parameters must match any previous MinHash objects.<br>
 new_labels: List, array or Pandas series containing text labels.<br><br>
 <b>query</b><br>
 Takes a label and returns the labels of any similar texts.<br>
