@@ -17,17 +17,25 @@ Install mmh3 library needed for Minhash using: `pip install mmh3`
 from snapy import MinHash, LSH
 
 content = [
-    'Jupiter is primarily composed of hydrogen with a quarter of its mass being helium',
-    'Jupiter moving out of the inner Solar System would have allowed the formation of inner planets.',
-    'A helium atom has about four times as much mass as a hydrogen atom, so the composition changes '
-    'when described as the proportion of mass contributed by different atoms.',
-    'Jupiter is primarily composed of hydrogen and a quarter of its mass being helium',
-    'A helium atom has about four times as much mass as a hydrogen atom and the composition changes '
-    'when described as a proportion of mass contributed by different atoms.',
-    'Theoretical models indicate that if Jupiter had much more mass than it does at present, it would shrink.',
+    'Jupiter is primarily composed of hydrogen with a quarter of its mass '
+    'being helium',
+    'Jupiter moving out of the inner Solar System would have allowed the '
+    'formation of inner planets.',
+    'A helium atom has about four times as much mass as a hydrogen atom, so '
+    'the composition changes when described as the proportion of mass '
+    'contributed by different atoms.',
+    'Jupiter is primarily composed of hydrogen and a quarter of its mass '
+    'being helium',
+    'A helium atom has about four times as much mass as a hydrogen atom and '
+    'the composition changes when described as a proportion of mass '
+    'contributed by different atoms.',
+    'Theoretical models indicate that if Jupiter had much more mass than it '
+    'does at present, it would shrink.',
     'This process causes Jupiter to shrink by about 2 cm each year.',
-    'Jupiter is mostly composed of hydrogen with a quarter of its mass being helium',
-    'The Great Red Spot is large enough to accommodate Earth within its boundaries.'
+    'Jupiter is mostly composed of hydrogen with a quarter of its mass '
+    'being helium',
+    'The Great Red Spot is large enough to accommodate Earth within its '
+    'boundaries.'
 ]
 
 labels = [1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -35,7 +43,7 @@ seed = 3
 
 
 # Create MinHash object.
-minhash = MinHash(content, n_gram=9, permutations=100, hash_bits=64, method='multi_hash', seed=3)
+minhash = MinHash(content, n_gram=9, permutations=100, hash_bits=64, seed=3)
 
 
 # Create LSH model.
@@ -49,13 +57,15 @@ print(lsh.query(1, min_jaccard=0.5))
 
 # Generate minhash signature and add new texts to LSH model.
 new_text = [
-    'Jupiter is primarily composed of hydrogen with a quarter of its mass being helium',
-    'Jupiter moving out of the inner Solar System would have allowed the formation of inner planets.',
+    'Jupiter is primarily composed of hydrogen with a quarter of its mass being 
+    'helium',
+    'Jupiter moving out of the inner Solar System would have allowed the '
+    'formation of inner planets.',
 ]
 
 new_labels = ['doc1', 'doc2']
 
-new_minhash = MinHash(new_text, n_gram=9, permutations=100, hash_bits=64, method='multi_hash', seed=3)
+new_minhash = MinHash(new_text, n_gram=9, permutations=100, hash_bits=64, seed=3)
 
 lsh.update(new_minhash, new_labels)
 
@@ -107,7 +117,7 @@ print(edge_list)
 Creates a MinHash object that contains matrix of Minhash Signatures for each text.
 
 #### MinHash Parameters
-```MinHash(text, n_gram=9, n_gram_type='char', permutations=100, hash_bits=64, method='multi_hash', seed=None)```<br><br>
+```MinHash(text, n_gram=9, n_gram_type='char', permutations=100, hash_bits=64, seed=None)```<br><br>
 <b>text: {list or ndarray}</b><br>
 Iterable containing strings of text for each text in a corpus.<br><br>
 <b>n_gram: int, optional, default: 9</b><br>
