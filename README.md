@@ -185,7 +185,7 @@ Takes a label and returns the labels of any similar texts.<br>
 <b>sensitivity:</b> Number of buckets texts must share to be returned as similar.<br><br>
 <b>remove</b><br>
 Remove file label and minhash signature from model.<br>
-```.def remove(label):```<br>
+```.remove(label)```<br>
 <b>label:</b> Label of text to remove from LSH model.<br><br>
 <b>contains</b><br>
 Returns list of labels contained in the model.<br>
