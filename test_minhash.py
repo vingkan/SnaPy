@@ -57,6 +57,63 @@ def test_multi_minhash_128():
     )
 
 
+def sparse_multi_hash_tests(first_hash, second_hash, hash_size):
+    minhash = MinHash(
+        content, hash_bits=hash_size, seed=seed, method="sparse_multi_hash"
+    )
+    assert minhash.seed == 3
+    assert minhash.method == "sparse_multi_hash"
+    assert type(minhash.signatures) is np.ndarray
+    assert minhash.signatures.shape == (9, 100)
+    signature = minhash.signatures
+    assert signature[0][0] == first_hash
+    assert signature[-1][-1] == second_hash
+
+
+def compare_multi_hash_tests(dataset_factor, hash_size):
+    print(
+        "Comparison Test: {}x dataset size, {}-bit hash".format(
+            dataset_factor, hash_size
+        )
+    )
+    content_huge = content * dataset_factor
+
+    # SMH
+    smh_minhash = MinHash(
+        content_huge, hash_bits=hash_size, seed=seed, method="sparse_multi_hash"
+    )
+    assert smh_minhash.seed == 3
+    assert smh_minhash.method == "sparse_multi_hash"
+    assert type(smh_minhash.signatures) is np.ndarray
+    assert smh_minhash.signatures.shape == (len(content_huge), 100)
+
+    # RMH
+    minhash = MinHash(content_huge, hash_bits=hash_size, seed=seed)
+    assert minhash.seed == 3
+    assert minhash.method == "multi_hash"
+    assert type(minhash.signatures) is np.ndarray
+    assert minhash.signatures.shape == (len(content_huge), 100)
+
+    assert smh_minhash.signatures[0][0] == minhash.signatures[0][0]
+    assert smh_minhash.signatures[-1][-1] == minhash.signatures[-1][-1]
+
+
+def test_sparse_multi_minhash_64():
+    sparse_multi_hash_tests(-9050934246571064385, -9214867028879031438, 64)
+
+
+def test_sparse_multi_minhash_32():
+    sparse_multi_hash_tests(-2146652248, -2083408229, 32)
+
+
+def test_sparse_multi_minhash_128():
+    sparse_multi_hash_tests(
+        6975552809044285838442055830789296621,
+        1468352371533149607987200777331494350,
+        128,
+    )
+
+
 def k_smallest_hash_tests(first_hash, second_hash, hash_size):
     minhash = MinHash(
         content,
@@ -124,3 +181,21 @@ def test_minhash_errors():
         MinHash(content, method="universal")
     with pytest.raises(ValueError):
         MinHash(content, n_gram=63)
+
+
+test_minhash_defaults()
+test_multi_minhash_64()
+test_multi_minhash_32()
+test_multi_minhash_128()
+test_sparse_multi_minhash_64()
+test_sparse_multi_minhash_32()
+test_sparse_multi_minhash_128()
+test_k_minhash_64()
+test_k_minhash_32()
+test_k_minhash_128()
+test_terms_minhash()
+test_string_input_minhash()
+test_minhash_errors()
+compare_multi_hash_tests(dataset_factor=10, hash_size=64)
+compare_multi_hash_tests(dataset_factor=10, hash_size=32)
+compare_multi_hash_tests(dataset_factor=10, hash_size=128)

@@ -22,14 +22,14 @@ class MinHash:
     """
 
     def __init__(
-            self,
-            text,
-            n_gram=9,
-            n_gram_type='char',
-            permutations=100,
-            hash_bits=64,
-            method='multi_hash',
-            seed=None
+        self,
+        text,
+        n_gram=9,
+        n_gram_type="char",
+        permutations=100,
+        hash_bits=64,
+        method="multi_hash",
+        seed=None,
     ):
         """ Generates a minhash signature matrix for texts in a corpus.
 
@@ -45,37 +45,28 @@ class MinHash:
 
         """
         self.n_gram = n_gram
-        if n_gram_type not in ['char', 'term']:
-            raise ValueError(
-                'Only "char" and "term" n_gram types are supported.'
-            )
+        if n_gram_type not in ["char", "term"]:
+            raise ValueError('Only "char" and "term" n_gram types are supported.')
         self.n_gram_type = n_gram_type
         self.permutations = permutations
         if hash_bits not in [32, 64, 128]:
-            raise ValueError(
-                'Only 32, 64 and 128 bit hashes are supported.'
-            )
+            raise ValueError("Only 32, 64 and 128 bit hashes are supported.")
         self.hash_bits = hash_bits
-        if method not in [
-            'multi_hash',
-            'k_smallest_values'
-        ]:
+        if method not in ["multi_hash", "k_smallest_values", "sparse_multi_hash"]:
             raise ValueError(
-                'Only "multi_hash" and "k_smallest_value" hash methods are supported.'
+                'Only "multi_hash", "k_smallest_value", and "sparse_multi_hash" hash methods are supported.'
             )
         self.method = method
         self.seed = None
         if seed:
             self.seed = seed
             np.random.seed(seed)
-        if method == 'multi_hash':
+        if method == "multi_hash" or method == "sparse_multi_hash":
             self._hash_seeds = np.random.randint(
                 low=1, high=100_000_000, size=permutations
             )
         else:
-            self._hash_seeds = np.random.randint(
-                low=1, high=100_000_000
-            )
+            self._hash_seeds = np.random.randint(low=1, high=100_000_000)
         # Run methods.
         self._shingles = self._k_shingles(text)
         self.signatures = self._min_hash()
@@ -97,17 +88,16 @@ class MinHash:
         if type(texts) == str:
             texts = [texts]
         for text in texts:
-            if self.n_gram_type == 'char':
+            if self.n_gram_type == "char":
                 shingles = [
-                               text[char:char + self.n_gram]
-                               for char in range(len(text))
-                           ][:trim_overflow]
+                    text[char : char + self.n_gram] for char in range(len(text))
+                ][:trim_overflow]
             else:
                 terms = text.split()
                 shingles = [
-                               ' '.join(terms[term:term + self.n_gram])
-                               for term in range(len(terms))
-                           ][:trim_overflow]
+                    " ".join(terms[term : term + self.n_gram])
+                    for term in range(len(terms))
+                ][:trim_overflow]
             if not shingles:
                 raise ValueError(
                     'Shingle "n_gram" size must not exceed minimum text length.'
@@ -130,27 +120,85 @@ class MinHash:
 
         """
         signature = []
+        peeks = 0
         for seed in np.nditer(self._hash_seeds):
             self._min_value = None
             for shingle in document:
+                peeks += 1
                 if self.hash_bits == 64:
-                    hash_value = mmh3.hash64(
-                        shingle, int(seed)
-                    )[0]
+                    hash_value = mmh3.hash64(shingle, int(seed))[0]
                 elif self.hash_bits == 32:
-                    hash_value = mmh3.hash(
-                        shingle, int(seed)
-                    )
+                    hash_value = mmh3.hash(shingle, int(seed))
                 else:
-                    hash_value = mmh3.hash128(
-                        shingle, int(seed)
-                    )
+                    hash_value = mmh3.hash128(shingle, int(seed))
                 if not self._min_value:
                     self._min_value = hash_value
                 elif self._min_value > hash_value:
                     self._min_value = hash_value
             signature.append(self._min_value)
-        return signature
+        return signature, peeks
+
+    def _sparse_multi_hash(self, docids_by_sid, shingle_list, docids):
+        """ Generates a texts minhash signature using sparse multi-hash method.
+
+        Uses i random hashes for j permutations selecting the minimum hash value
+        each time to build each texts hash signature.
+
+        Sorts all shingles by hash for each permutation and selects the first hash
+        as the minhash for each document.
+
+        Args:
+            document (list): List of document shingles.
+
+        Returns:
+            list: List of text signatures generated using k smallest neighbours method.
+
+        """
+        peeks = 0
+        signatures = []
+        n_shingles = len(shingle_list)
+        nlgn = int(n_shingles * np.log10(n_shingles))
+        for seed in np.nditer(self._hash_seeds):
+            signature = [None for _ in docids]
+            docid_pool = set(docids)
+            shingle_records = []
+            for shingle_record in shingle_list:
+                shingle = shingle_record["shingle"]
+                if self.hash_bits == 64:
+                    hash_value = mmh3.hash64(shingle, int(seed))[0]
+                elif self.hash_bits == 32:
+                    hash_value = mmh3.hash(shingle, int(seed))
+                else:
+                    hash_value = mmh3.hash128(shingle, int(seed))
+                shingle_record["hash"] = hash_value
+                shingle_records.append(shingle_record)
+            shingle_records = sorted(shingle_records, key=lambda r: r["hash"])
+            peeks += nlgn
+            i = 0
+            while len(docid_pool) > 0:
+                best_shingle = shingle_records[i]
+                best_sid = best_shingle["sid"]
+                docids_with_sid = docids_by_sid[best_sid]
+                to_remove = []
+                if len(docids_with_sid) < len(docid_pool):
+                    for docid in docids_with_sid:
+                        peeks += 1
+                        if docid in docid_pool:
+                            signature[docid] = best_shingle["hash"]
+                            to_remove.append(docid)
+                else:
+                    for docid in docid_pool:
+                        peeks += 1
+                        if docid in docids_with_sid:
+                            signature[docid] = best_shingle["hash"]
+                            to_remove.append(docid)
+                for docid in to_remove:
+                    if docid in docid_pool:
+                        docid_pool.remove(docid)
+                i += 1
+            signatures.append(signature)
+        print("Sparse Multi Hash: {:,d} peeks".format(peeks))
+        return np.transpose(signatures)
 
     def _k_smallest_hash(self, document):
         """ Generates a texts minhash signature using k smallest neighbours method.
@@ -172,21 +220,15 @@ class MinHash:
         heapq.heapify(signature)
         if len(document) <= self.permutations:
             raise ValueError(
-                'N permutations must not be >= n shingles for k_smallest_values method'
+                "N permutations must not be >= n shingles for k_smallest_values method"
             )
         for shingle in document:
             if self.hash_bits == 64:
-                hashed_shingle = mmh3.hash64(
-                    shingle, self._hash_seeds
-                )[0]
+                hashed_shingle = mmh3.hash64(shingle, self._hash_seeds)[0]
             elif self.hash_bits == 32:
-                hashed_shingle = mmh3.hash(
-                    shingle, self._hash_seeds
-                )
+                hashed_shingle = mmh3.hash(shingle, self._hash_seeds)
             else:
-                hashed_shingle = mmh3.hash128(
-                    shingle, self._hash_seeds
-                )
+                hashed_shingle = mmh3.hash128(shingle, self._hash_seeds)
             heapq.heappush(signature, hashed_shingle)
         return heapq.nsmallest(self.permutations, signature)
 
@@ -199,11 +241,38 @@ class MinHash:
 
         """
         signatures = []
-        for document in self._shingles:
-            if self.method is 'multi_hash':
-                signature = self._multi_hash(document)
-                signatures.append(signature)
-            elif self.method is 'k_smallest_values':
-                signature = self._k_smallest_hash(document)
-                signatures.append(signature)
+        if self.method is "sparse_multi_hash":
+            shingle_indices = {}
+            shingle_list = []
+            docids_by_sid = {}
+            items = 0
+            for docid, document in enumerate(self._shingles):
+                for shingle in document:
+                    items += 1
+                    if shingle not in shingle_indices:
+                        sid = len(shingle_indices)
+                        shingle_indices[shingle] = sid
+                        shingle_list.append({"shingle": shingle, "sid": sid})
+                    sid = shingle_indices[shingle]
+                    if sid not in docids_by_sid:
+                        docids_by_sid[sid] = set()
+                    docids_by_sid[sid].add(docid)
+            print("P = {:,d} permutations".format(len(self._hash_seeds)))
+            print("D = {:,d} documents".format(docid + 1))
+            print("S = {:,d} shingles".format(len(shingle_list)))
+            print("Z = {:,d} NNZ entries".format(items))
+            signatures = self._sparse_multi_hash(
+                docids_by_sid, shingle_list, list(range(docid + 1))
+            )
+        else:
+            peeks = 0
+            for document in self._shingles:
+                if self.method is "multi_hash":
+                    signature, sub_peeks = self._multi_hash(document)
+                    signatures.append(signature)
+                    peeks += sub_peeks
+                elif self.method is "k_smallest_values":
+                    signature = self._k_smallest_hash(document)
+                    signatures.append(signature)
+            print("Regular Multi Hash: {:,d} peeks".format(peeks))
         return np.array(signatures)
