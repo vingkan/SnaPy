@@ -4,6 +4,23 @@
 import numpy as np
 import mmh3
 import heapq
+from joblib import Parallel, delayed
+
+
+def parallel_minhash(document, doc_id, seed_id, hash_bits, seed):
+    min_value = None
+    for shingle in document:
+        if hash_bits == 64:
+            hash_value = mmh3.hash64(shingle, int(seed))[0]
+        elif hash_bits == 32:
+            hash_value = mmh3.hash(shingle, int(seed))
+        else:
+            hash_value = mmh3.hash128(shingle, int(seed))
+        if not min_value:
+            min_value = hash_value
+        elif min_value > hash_value:
+            min_value = hash_value
+    return (min_value, doc_id, seed_id)
 
 
 class MinHash:
@@ -22,14 +39,15 @@ class MinHash:
     """
 
     def __init__(
-            self,
-            text,
-            n_gram=9,
-            n_gram_type='char',
-            permutations=100,
-            hash_bits=64,
-            method='multi_hash',
-            seed=None
+        self,
+        text,
+        n_gram=9,
+        n_gram_type="char",
+        permutations=100,
+        hash_bits=64,
+        method="multi_hash",
+        seed=None,
+        n_jobs=None,
     ):
         """ Generates a minhash signature matrix for texts in a corpus.
 
@@ -45,21 +63,14 @@ class MinHash:
 
         """
         self.n_gram = n_gram
-        if n_gram_type not in ['char', 'term']:
-            raise ValueError(
-                'Only "char" and "term" n_gram types are supported.'
-            )
+        if n_gram_type not in ["char", "term"]:
+            raise ValueError('Only "char" and "term" n_gram types are supported.')
         self.n_gram_type = n_gram_type
         self.permutations = permutations
         if hash_bits not in [32, 64, 128]:
-            raise ValueError(
-                'Only 32, 64 and 128 bit hashes are supported.'
-            )
+            raise ValueError("Only 32, 64 and 128 bit hashes are supported.")
         self.hash_bits = hash_bits
-        if method not in [
-            'multi_hash',
-            'k_smallest_values'
-        ]:
+        if method not in ["multi_hash", "k_smallest_values"]:
             raise ValueError(
                 'Only "multi_hash" and "k_smallest_value" hash methods are supported.'
             )
@@ -68,14 +79,17 @@ class MinHash:
         if seed:
             self.seed = seed
             np.random.seed(seed)
-        if method == 'multi_hash':
+        if method == "multi_hash":
             self._hash_seeds = np.random.randint(
                 low=1, high=100_000_000, size=permutations
             )
         else:
-            self._hash_seeds = np.random.randint(
-                low=1, high=100_000_000
-            )
+            self._hash_seeds = np.random.randint(low=1, high=100_000_000)
+        if not (isinstance(n_jobs, int) or n_jobs is None):
+            raise ValueError("Only int or None allowed for n_jobs.")
+        if n_jobs == 0:
+            n_jobs = None
+        self.n_jobs = n_jobs
         # Run methods.
         self._shingles = self._k_shingles(text)
         self.signatures = self._min_hash()
@@ -97,17 +111,16 @@ class MinHash:
         if type(texts) == str:
             texts = [texts]
         for text in texts:
-            if self.n_gram_type == 'char':
+            if self.n_gram_type == "char":
                 shingles = [
-                               text[char:char + self.n_gram]
-                               for char in range(len(text))
-                           ][:trim_overflow]
+                    text[char : char + self.n_gram] for char in range(len(text))
+                ][:trim_overflow]
             else:
                 terms = text.split()
                 shingles = [
-                               ' '.join(terms[term:term + self.n_gram])
-                               for term in range(len(terms))
-                           ][:trim_overflow]
+                    " ".join(terms[term : term + self.n_gram])
+                    for term in range(len(terms))
+                ][:trim_overflow]
             if not shingles:
                 raise ValueError(
                     'Shingle "n_gram" size must not exceed minimum text length.'
@@ -134,17 +147,11 @@ class MinHash:
             self._min_value = None
             for shingle in document:
                 if self.hash_bits == 64:
-                    hash_value = mmh3.hash64(
-                        shingle, int(seed)
-                    )[0]
+                    hash_value = mmh3.hash64(shingle, int(seed))[0]
                 elif self.hash_bits == 32:
-                    hash_value = mmh3.hash(
-                        shingle, int(seed)
-                    )
+                    hash_value = mmh3.hash(shingle, int(seed))
                 else:
-                    hash_value = mmh3.hash128(
-                        shingle, int(seed)
-                    )
+                    hash_value = mmh3.hash128(shingle, int(seed))
                 if not self._min_value:
                     self._min_value = hash_value
                 elif self._min_value > hash_value:
@@ -172,23 +179,33 @@ class MinHash:
         heapq.heapify(signature)
         if len(document) <= self.permutations:
             raise ValueError(
-                'N permutations must not be >= n shingles for k_smallest_values method'
+                "N permutations must not be >= n shingles for k_smallest_values method"
             )
         for shingle in document:
             if self.hash_bits == 64:
-                hashed_shingle = mmh3.hash64(
-                    shingle, self._hash_seeds
-                )[0]
+                hashed_shingle = mmh3.hash64(shingle, self._hash_seeds)[0]
             elif self.hash_bits == 32:
-                hashed_shingle = mmh3.hash(
-                    shingle, self._hash_seeds
-                )
+                hashed_shingle = mmh3.hash(shingle, self._hash_seeds)
             else:
-                hashed_shingle = mmh3.hash128(
-                    shingle, self._hash_seeds
-                )
+                hashed_shingle = mmh3.hash128(shingle, self._hash_seeds)
             heapq.heappush(signature, hashed_shingle)
         return heapq.nsmallest(self.permutations, signature)
+
+    def _parallel_multi_hash(self):
+        all_args = []
+        H = self.permutations
+        D = 0
+        for doc_id, document in enumerate(self._shingles):
+            D += 1
+            for seed_id, seed in enumerate(np.nditer(self._hash_seeds)):
+                minhash_args = (document, doc_id, seed_id, self.hash_bits, seed)
+                all_args.append(minhash_args)
+        para = Parallel(n_jobs=self.n_jobs)
+        all_res = para(delayed(parallel_minhash)(*a) for a in all_args)
+        signatures = [[None for _ in range(H)] for _ in range(D)]
+        for min_hash, doc_id, seed_id in all_res:
+            signatures[doc_id][seed_id] = min_hash
+        return signatures
 
     def _min_hash(self):
         """ Calculates document signature by calling the selected hashing method.
@@ -199,11 +216,16 @@ class MinHash:
 
         """
         signatures = []
-        for document in self._shingles:
-            if self.method is 'multi_hash':
-                signature = self._multi_hash(document)
-                signatures.append(signature)
-            elif self.method is 'k_smallest_values':
-                signature = self._k_smallest_hash(document)
-                signatures.append(signature)
+        if self.n_jobs is None:
+            print("Regular")
+            for document in self._shingles:
+                if self.method == "multi_hash":
+                    signature = self._multi_hash(document)
+                    signatures.append(signature)
+                elif self.method == "k_smallest_values":
+                    signature = self._k_smallest_hash(document)
+                    signatures.append(signature)
+        else:
+            print("Parallel")
+            signatures = self._parallel_multi_hash()
         return np.array(signatures)

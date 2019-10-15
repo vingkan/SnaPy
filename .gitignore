@@ -6,3 +6,5 @@
 working/
 .cache/
 .build/
+data/
+test_minhash.py
