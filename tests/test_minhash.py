@@ -117,14 +117,14 @@ def test_k_minhash_128():
 
 
 def test_terms_minhash():
-    minhash = MinHash(content, n_gram_type='term')
+    minhash = MinHash(content, n_gram_type='term', seed=seed)
     assert minhash.n_gram_type == 'term'
     assert type(minhash.signatures) is np.ndarray
     signature = minhash.signatures
     assert signature.shape == (9, 100)
-    assert signature[0][0] == -3695830800917301951
+    assert signature[0][0] == -8115786556000760185
     assert np.array(signature[0][0]).dtype == 'int64'
-    assert signature[-1][-1] == -7737361925742332862
+    assert signature[-1][-1] == -579511180950999701
 
 
 def test_string_input_minhash():
