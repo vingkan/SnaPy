@@ -72,12 +72,33 @@ permutation_values = [10, 100, 1000, 10_000]
 n_gram = 9
 hash_size = 64
 seed = 12
+n_jobs = 2
 
 print("Dataset: New York Times News Articles")
 print("\tTrials = {}".format(n_runs))
 print("\tN-Grams Size = {}".format(n_gram))
 print("\tHash Size = {}".format(hash_size))
 print()
+
+for n_permutations in permutation_values:
+    print("Parallel Multi Hash (n_jobs={}), Permutations = {:,d}".format(
+        n_jobs, n_permutations
+    ))
+    for n_samples in dataset_sizes:
+        mean_secs = time_minhash(
+            n_samples=n_samples,
+            n_runs=n_runs,
+            minhash_kwargs={
+                'hash_bits': hash_size,
+                'permutations': n_permutations,
+                'n_gram': n_gram,
+                'seed': seed,
+                'method': 'multi_hash',
+                'n_jobs': n_jobs
+            }
+        )
+        print("\tMinHash(N = {:,d}) = {:.3f} secs".format(n_samples, mean_secs))
+    print()
 
 for n_permutations in permutation_values:
     print("Multi Hash, Permutations = {:,d}".format(n_permutations))

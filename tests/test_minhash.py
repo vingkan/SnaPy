@@ -3,6 +3,7 @@ from snapy import MinHash
 import numpy as np
 
 seed = 3
+n_jobs = 2
 content = [
     'Jupiter is primarily composed of hydrogen with a quarter of its mass being helium',
     'Jupiter moving out of the inner Solar System would have allowed the formation of inner planets.',
@@ -112,6 +113,43 @@ def test_k_minhash_128():
     k_smallest_hash_tests(
         6975552809044285838442055830789296621,
         257973159872861001802369490457024221505,
+        128
+    )
+
+
+def parallell_multi_hash_tests(first_hash, second_hash, hash_size):
+    minhash = MinHash(
+        content, hash_bits=hash_size, seed=seed, n_jobs=n_jobs
+    )
+    assert minhash.seed == 3
+    assert minhash.method == 'multi_hash'
+    assert type(minhash.signatures) is np.ndarray
+    assert minhash.signatures.shape == (9, 100)
+    signature = minhash.signatures
+    assert signature[0][0] == first_hash
+    assert signature[-1][-1] == second_hash
+
+
+def test_parallel_multi_minhash_64():
+    parallell_multi_hash_tests(
+        -9050934246571064385,
+        -9214867028879031438,
+        64
+    )
+
+
+def test_parallel_multi_minhash_32():
+    parallell_multi_hash_tests(
+        -2146652248,
+        -2083408229,
+        32
+    )
+
+
+def test_parallel_multi_minhash_128():
+    parallell_multi_hash_tests(
+        6975552809044285838442055830789296621,
+        1468352371533149607987200777331494350,
         128
     )
 

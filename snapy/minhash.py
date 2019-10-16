@@ -4,6 +4,23 @@
 import numpy as np
 import mmh3
 import heapq
+from joblib import Parallel, delayed
+
+
+def par_do_minhash(document, doc_id, seed_id, hash_bits, seed):
+    min_value = None
+    for shingle in document:
+        if hash_bits == 64:
+            hash_value = mmh3.hash64(shingle, int(seed))[0]
+        elif hash_bits == 32:
+            hash_value = mmh3.hash(shingle, int(seed))
+        else:
+            hash_value = mmh3.hash128(shingle, int(seed))
+        if not min_value:
+            min_value = hash_value
+        elif min_value > hash_value:
+            min_value = hash_value
+    return (min_value, doc_id, seed_id)
 
 
 class MinHash:
@@ -29,7 +46,8 @@ class MinHash:
             permutations=100,
             hash_bits=64,
             method='multi_hash',
-            seed=None
+            seed=None,
+            n_jobs=None
     ):
         """ Generates a minhash signature matrix for texts in a corpus.
 
@@ -76,6 +94,11 @@ class MinHash:
             self._hash_seeds = np.random.randint(
                 low=1, high=100_000_000
             )
+        if not (isinstance(n_jobs, int) or n_jobs is None):
+            raise ValueError('n_jobs must be None or an integer.')
+        self.n_jobs = n_jobs
+        if n_jobs == 0:
+            self.n_jobs = None
         # Run methods.
         self._shingles = self._k_shingles(text)
         self.signatures = self._min_hash()
@@ -190,6 +213,22 @@ class MinHash:
             heapq.heappush(signature, hashed_shingle)
         return heapq.nsmallest(self.permutations, signature)
 
+    def _parallel_multi_hash(self, documents):
+        all_args = []
+        H = self.permutations
+        D = 0
+        for doc_id, document in enumerate(documents):
+            D += 1
+            for seed_id, seed in enumerate(np.nditer(self._hash_seeds)):
+                minhash_args = (document, doc_id, seed_id, self.hash_bits, seed)
+                all_args.append(minhash_args)
+        para = Parallel(n_jobs=self.n_jobs, prefer='threads')
+        all_res = para(delayed(par_do_minhash)(*a) for a in all_args)
+        signatures = [[None for _ in range(H)] for _ in range(D)]
+        for min_hash, doc_id, seed_id in all_res:
+            signatures[doc_id][seed_id] = min_hash
+        return signatures
+
     def _min_hash(self):
         """ Calculates document signature by calling the selected hashing method.
 
@@ -198,12 +237,15 @@ class MinHash:
                 signature with n representing each permutations minimum hash value.
 
         """
-        signatures = []
-        for document in self._shingles:
-            if self.method is 'multi_hash':
-                signature = self._multi_hash(document)
-                signatures.append(signature)
-            elif self.method is 'k_smallest_values':
-                signature = self._k_smallest_hash(document)
-                signatures.append(signature)
+        if self.method is 'multi_hash' and self.n_jobs:
+            signatures = self._parallel_multi_hash(self._shingles)
+        else:
+            signatures = []
+            for document in self._shingles:
+                if self.method is 'multi_hash':
+                    signature = self._multi_hash(document)
+                    signatures.append(signature)
+                elif self.method is 'k_smallest_values':
+                    signature = self._k_smallest_hash(document)
+                    signatures.append(signature)
         return np.array(signatures)
