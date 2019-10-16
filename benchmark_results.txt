@@ -1,0 +1,29 @@
+Dataset: New York Times News Articles
+    Trials = 1
+    N-Grams Size = 9
+    Hash Size = 64
+
+Multi Hash, Permutations = 10
+    MinHash(N = 10) = 0.001 secs
+    MinHash(N = 100) = 0.012 secs
+    MinHash(N = 1,000) = 0.135 secs
+
+Multi Hash, Permutations = 100
+    MinHash(N = 10) = 0.013 secs
+    MinHash(N = 100) = 0.114 secs
+    MinHash(N = 1,000) = 1.380 secs
+
+Multi Hash, Permutations = 1,000
+    MinHash(N = 10) = 0.123 secs
+    MinHash(N = 100) = 1.133 secs
+    MinHash(N = 1,000) = 12.600 secs
+
+Multi Hash, Permutations = 10,000
+    MinHash(N = 10) = 1.125 secs
+    MinHash(N = 100) = 10.795 secs
+    MinHash(N = 1,000) = 138.602 secs
+
+K-Smallest Values, Permutations = 9
+    MinHash(N = 10) = 0.000 secs
+    MinHash(N = 100) = 0.003 secs
+    MinHash(N = 1,000) = 0.041 secs
