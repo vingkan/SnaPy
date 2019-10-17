@@ -5,45 +5,45 @@ Dataset: New York Times News Articles
 
 Parallel Multi Hash (n_jobs=2), Permutations = 10
     MinHash(N = 10) = 0.107 secs
-    MinHash(N = 100) = 0.106 secs
-    MinHash(N = 1,000) = 0.827 secs
+    MinHash(N = 100) = 0.103 secs
+    MinHash(N = 1,000) = 0.210 secs
 
 Parallel Multi Hash (n_jobs=2), Permutations = 100
-    MinHash(N = 10) = 0.103 secs
-    MinHash(N = 100) = 0.941 secs
-    MinHash(N = 1,000) = 8.321 secs
+    MinHash(N = 10) = 0.106 secs
+    MinHash(N = 100) = 0.107 secs
+    MinHash(N = 1,000) = 1.132 secs
 
 Parallel Multi Hash (n_jobs=2), Permutations = 1,000
-    MinHash(N = 10) = 0.815 secs
-    MinHash(N = 100) = 8.511 secs
-    MinHash(N = 1,000) = 82.081 secs
+    MinHash(N = 10) = 0.106 secs
+    MinHash(N = 100) = 0.981 secs
+    MinHash(N = 1,000) = 10.253 secs
 
 Parallel Multi Hash (n_jobs=2), Permutations = 10,000
-    MinHash(N = 10) = 7.985 secs
-    MinHash(N = 100) = 77.908 secs
-    ...
+    MinHash(N = 10) = 0.983 secs
+    MinHash(N = 100) = 8.800 secs
+    MinHash(N = 1,000) = 105.176 secs
 
 Multi Hash, Permutations = 10
     MinHash(N = 10) = 0.001 secs
-    MinHash(N = 100) = 0.012 secs
-    MinHash(N = 1,000) = 0.135 secs
+    MinHash(N = 100) = 0.011 secs
+    MinHash(N = 1,000) = 0.126 secs
 
 Multi Hash, Permutations = 100
-    MinHash(N = 10) = 0.013 secs
-    MinHash(N = 100) = 0.114 secs
-    MinHash(N = 1,000) = 1.380 secs
+    MinHash(N = 10) = 0.011 secs
+    MinHash(N = 100) = 0.104 secs
+    MinHash(N = 1,000) = 1.222 secs
 
 Multi Hash, Permutations = 1,000
-    MinHash(N = 10) = 0.123 secs
-    MinHash(N = 100) = 1.133 secs
-    MinHash(N = 1,000) = 12.600 secs
+    MinHash(N = 10) = 0.112 secs
+    MinHash(N = 100) = 1.046 secs
+    MinHash(N = 1,000) = 12.327 secs
 
 Multi Hash, Permutations = 10,000
-    MinHash(N = 10) = 1.125 secs
-    MinHash(N = 100) = 10.795 secs
-    MinHash(N = 1,000) = 138.602 secs
+    MinHash(N = 10) = 1.079 secs
+    MinHash(N = 100) = 10.818 secs
+    MinHash(N = 1,000) = 146.293 secs
 
 K-Smallest Values, Permutations = 9
     MinHash(N = 10) = 0.000 secs
-    MinHash(N = 100) = 0.003 secs
-    MinHash(N = 1,000) = 0.041 secs
+    MinHash(N = 100) = 0.002 secs
+    MinHash(N = 1,000) = 0.025 secs

@@ -7,20 +7,29 @@ import heapq
 from joblib import Parallel, delayed
 
 
-def par_do_minhash(document, doc_id, seed_id, hash_bits, seed):
-    min_value = None
-    for shingle in document:
-        if hash_bits == 64:
-            hash_value = mmh3.hash64(shingle, int(seed))[0]
-        elif hash_bits == 32:
-            hash_value = mmh3.hash(shingle, int(seed))
-        else:
-            hash_value = mmh3.hash128(shingle, int(seed))
-        if not min_value:
-            min_value = hash_value
-        elif min_value > hash_value:
-            min_value = hash_value
-    return (min_value, doc_id, seed_id)
+def par_do_minhash(document, doc_id, hash_bits, hash_seeds):
+    signature = []
+    for seed in np.nditer(hash_seeds):
+        min_value = None
+        for shingle in document:
+            if hash_bits == 64:
+                hash_value = mmh3.hash64(
+                    shingle, int(seed)
+                )[0]
+            elif hash_bits == 32:
+                hash_value = mmh3.hash(
+                    shingle, int(seed)
+                )
+            else:
+                hash_value = mmh3.hash128(
+                    shingle, int(seed)
+                )
+            if not min_value:
+                min_value = hash_value
+            elif min_value > hash_value:
+                min_value = hash_value
+        signature.append(min_value)
+    return signature, doc_id
 
 
 class MinHash:
@@ -175,6 +184,44 @@ class MinHash:
             signature.append(self._min_value)
         return signature
 
+    def _par_multi_hash(self, document, doc_id):
+        """ Generates a texts minhash signature using multi-hash method.
+
+        Uses i random hashes for j permutations selecting the minimum hash value
+        each time to build each texts hash signature.
+
+        Slower but more stable than k smallest hash method.
+
+        Args:
+            document (list): List of document shingles.
+
+        Returns:
+            list: List of text signatures generated using k smallest neighbours method.
+
+        """
+        signature = []
+        for seed in np.nditer(self._hash_seeds):
+            min_value = None
+            for shingle in document:
+                if self.hash_bits == 64:
+                    hash_value = mmh3.hash64(
+                        shingle, int(seed)
+                    )[0]
+                elif self.hash_bits == 32:
+                    hash_value = mmh3.hash(
+                        shingle, int(seed)
+                    )
+                else:
+                    hash_value = mmh3.hash128(
+                        shingle, int(seed)
+                    )
+                if not min_value:
+                    min_value = hash_value
+                elif min_value > hash_value:
+                    min_value = hash_value
+            signature.append(min_value)
+        return signature, doc_id
+
     def _k_smallest_hash(self, document):
         """ Generates a texts minhash signature using k smallest neighbours method.
 
@@ -214,19 +261,18 @@ class MinHash:
         return heapq.nsmallest(self.permutations, signature)
 
     def _parallel_multi_hash(self, documents):
-        all_args = []
-        H = self.permutations
-        D = 0
-        for doc_id, document in enumerate(documents):
-            D += 1
-            for seed_id, seed in enumerate(np.nditer(self._hash_seeds)):
-                minhash_args = (document, doc_id, seed_id, self.hash_bits, seed)
-                all_args.append(minhash_args)
         para = Parallel(n_jobs=self.n_jobs, prefer='threads')
-        all_res = para(delayed(par_do_minhash)(*a) for a in all_args)
-        signatures = [[None for _ in range(H)] for _ in range(D)]
-        for min_hash, doc_id, seed_id in all_res:
-            signatures[doc_id][seed_id] = min_hash
+        all_res = para(
+            delayed(par_do_minhash)(document, doc_id, self.hash_bits, self._hash_seeds)
+            for doc_id, document in enumerate(documents)
+        )
+        # all_res = para(
+        #     delayed(self._par_multi_hash)(document, doc_id)
+        #     for doc_id, document in enumerate(documents)
+        # )
+        signatures = [None for _ in range(len(all_res))]
+        for signature, doc_id in all_res:
+            signatures[doc_id] = signature
         return signatures
 
     def _min_hash(self):
